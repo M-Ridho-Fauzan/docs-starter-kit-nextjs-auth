@@ -15,7 +15,7 @@ export function Footer() {
           {strings["footer.copyright"]}
         </p>
         <a
-          href="https://github.com/anomalyco/opencode"
+          href="https://docs-nextauth-betterauth-five.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-muted-foreground hover:text-foreground"

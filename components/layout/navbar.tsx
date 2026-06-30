@@ -104,7 +104,7 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         </DropdownMenu>
 
         <a
-          href="https://github.com/anomalyco/opencode"
+          href="https://docs-nextauth-betterauth-five.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"

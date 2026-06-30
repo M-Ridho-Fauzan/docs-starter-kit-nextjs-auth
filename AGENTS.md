@@ -1,6 +1,6 @@
 # AGENTS.md — NextJS Auth Starter Kit Documentation Project
 
-> **Project**: Standalone documentation site for [starterkit-auth-nextjs](https://github.com/anomalyco/opencode) — a Next.js 16 auth starter kit built on Better Auth.
+> **Project**: Standalone documentation site for [starterkit-auth-nextjs](https://docs-nextauth-betterauth-five.vercel.app) — a Next.js 16 auth starter kit built on Better Auth.
 >
 > **Source project**: `../..` (the parent directory is the starter kit itself)
 >
@@ -65,9 +65,11 @@
 ## Agent Roles
 
 ### architect (Plan mode)
+
 Activated when: designing new doc pages, resolving structure ambiguity, or choosing between documentation patterns.
 
 Responsibilities:
+
 - Design doc outline BEFORE writing content
 - Evaluate Diataxis framework compliance (tutorial, how-to, reference, explanation)
 - Evaluate whether changes affect the content pipeline (fumadocs-mdx) or the custom layout components
@@ -75,9 +77,11 @@ Responsibilities:
 - Never write content — only outlines and specifications
 
 ### builder (Build mode)
+
 Activated when: a design doc exists in `.agents/decisions/`.
 
 Responsibilities:
+
 - Read the design doc FIRST, then write exactly what is specified
 - One section at a time — do not start next until current passes review
 - Follow the docs-writing skill rules
@@ -87,9 +91,11 @@ Responsibilities:
 - Run `pnpm build` to verify production build after each content change
 
 ### reviewer
+
 Activated by: `review` command or manually before completing a section.
 
 Responsibilities:
+
 - Check all source file links resolve (relative paths to `../../src/...`)
 - Check code examples are accurate and match the actual API
 - Verify every doc has: title, description, proper heading hierarchy, related links
@@ -111,6 +117,7 @@ description: One-sentence description of what this page covers, including keywor
 ```
 
 Additional SEO rules:
+
 - **h1** (`# Title`) — must match `title` frontmatter, include primary keyword
 - **h2** (`## Section`) — descriptive, use natural language questions/phrases
 - **Never skip heading levels** — h1 → h2 → h3, no h1 → h3
@@ -143,14 +150,14 @@ Additional SEO rules:
 
 Commands are user-invoked workflows defined in `.agents/commands/`. Use them from OpenCode with `/run [command]`.
 
-| Command | When to use | What it does |
-|---------|-------------|--------------|
-| `next-task` | Start of each session | Reads AGENTS.md checklist, identifies the next unchecked item, reports target file |
-| `write-section` | When writing content | Writes or updates a section following the docs-writing skill rules |
-| `seo-audit` | After content is written | Audits all files for SEO compliance (frontmatter, headings, links, descriptions) |
-| `review` | Before finalizing | Runs content review for accuracy, completeness, and consistency |
-| `check-links` | Anytime | Verifies all internal markdown links resolve to actual files |
-| `translate-to` | When translating docs | Translates all untranslated `.mdx` files from English to a target locale; auto-configures new languages if needed |
+| Command         | When to use              | What it does                                                                                                      |
+| --------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `next-task`     | Start of each session    | Reads AGENTS.md checklist, identifies the next unchecked item, reports target file                                |
+| `write-section` | When writing content     | Writes or updates a section following the docs-writing skill rules                                                |
+| `seo-audit`     | After content is written | Audits all files for SEO compliance (frontmatter, headings, links, descriptions)                                  |
+| `review`        | Before finalizing        | Runs content review for accuracy, completeness, and consistency                                                   |
+| `check-links`   | Anytime                  | Verifies all internal markdown links resolve to actual files                                                      |
+| `translate-to`  | When translating docs    | Translates all untranslated `.mdx` files from English to a target locale; auto-configures new languages if needed |
 
 ### Workflow
 

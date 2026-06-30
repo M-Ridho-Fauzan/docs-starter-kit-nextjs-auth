@@ -5,7 +5,7 @@ description: Docs for the Next.js 16 auth starter kit. Guides, API reference, an
 
 # NextJS Auth Starter Kit Documentation
 
-Documentation for [starterkit-auth-nextjs](https://github.com/anomalyco/opencode) — a production-grade Next.js 16 authentication starter kit built on [Better Auth](https://www.better-auth.com/). Includes email/password authentication, OAuth social login, two-factor authentication (TOTP), role-based access control, session management, and shadcn/ui components.
+Documentation for [starterkit-auth-nextjs](https://docs-nextauth-betterauth-five.vercel.app) — a production-grade Next.js 16 authentication starter kit built on [Better Auth](https://www.better-auth.com/). Includes email/password authentication, OAuth social login, two-factor authentication (TOTP), role-based access control, session management, and shadcn/ui components.
 
 ## Quick Links
 
@@ -15,16 +15,16 @@ Documentation for [starterkit-auth-nextjs](https://github.com/anomalyco/opencode
 
 ## Documentation Sections
 
-| Section | Pages | Description |
-|---------|-------|-------------|
-| [Get Started](./get-started/installation.md) | 5 | Installation, configuration, environment variables |
-| [Auth Features](./auth-features/email-password.md) | 6 | Email/password, OAuth, 2FA, roles, and more |
-| [Database](./database/overview.md) | 5 | Adapter setup for Prisma, Drizzle, Kysely |
-| [API Reference](./api/server-actions.md) | 4 | Server actions, hooks, utilities, middleware |
-| [UI Components](./ui/auth-components.md) | 3 | Auth forms, user profile, theming |
-| [Guides](./guides/deployment.md) | 4 | Deployment, testing, migrations, advanced topics |
-| [Reference](./reference/config-schema.md) | 3 | Config schema, TypeScript types, CLI tools |
-| [Examples](./examples/protected-layout.md) | 2 | Complete code examples |
+| Section                                            | Pages | Description                                        |
+| -------------------------------------------------- | ----- | -------------------------------------------------- |
+| [Get Started](./get-started/installation.md)       | 5     | Installation, configuration, environment variables |
+| [Auth Features](./auth-features/email-password.md) | 6     | Email/password, OAuth, 2FA, roles, and more        |
+| [Database](./database/overview.md)                 | 5     | Adapter setup for Prisma, Drizzle, Kysely          |
+| [API Reference](./api/server-actions.md)           | 4     | Server actions, hooks, utilities, middleware       |
+| [UI Components](./ui/auth-components.md)           | 3     | Auth forms, user profile, theming                  |
+| [Guides](./guides/deployment.md)                   | 4     | Deployment, testing, migrations, advanced topics   |
+| [Reference](./reference/config-schema.md)          | 3     | Config schema, TypeScript types, CLI tools         |
+| [Examples](./examples/protected-layout.md)         | 2     | Complete code examples                             |
 
 ## About the Project
 
@@ -51,10 +51,10 @@ Current locale structure: `https://docs.example.com/en/docs/get-started/installa
 
 To add a new language, update these files:
 
-| File | Change |
-|------|--------|
-| `lib/i18n.ts` | Add language code to `languages` array + inline UI translations in `.add()` block |
-| `middleware.ts` | Add language code to `languages` array |
+| File            | Change                                                                            |
+| --------------- | --------------------------------------------------------------------------------- |
+| `lib/i18n.ts`   | Add language code to `languages` array + inline UI translations in `.add()` block |
+| `middleware.ts` | Add language code to `languages` array                                            |
 
 ### Translating Content
 
