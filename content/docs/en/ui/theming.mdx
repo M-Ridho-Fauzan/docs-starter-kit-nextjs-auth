@@ -1,0 +1,86 @@
+---
+title: Theming & Dark Mode
+description: Theme configuration and dark mode support for the Next.js 16 Auth Starter Kit. shadcn/ui CSS variables, Tailwind CSS v4, and .dark class system.
+---
+
+# Theming & Dark Mode
+
+The starter kit uses shadcn/ui with Tailwind CSS v4 and supports dark mode via CSS variables.
+
+## How it works
+
+Theming uses CSS custom properties (variables) defined in `src/app/globals.css`. The `.dark` class toggles between light and dark color schemes.
+
+```css
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+  /* ... other tokens */
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  /* ... other tokens */
+}
+```
+
+## Configuration
+
+Theme is set in `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  ui: {
+    theme: "shadcn", // currently the only theme
+  },
+});
+```
+
+## Dark Mode Toggle
+
+To add a dark mode toggle to your app:
+
+```tsx
+"use client";
+import { useTheme } from "@/hooks/use-theme"; // or your own implementation
+
+function ThemeToggle() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
+
+  return (
+    <button onClick={() => setIsDark(!isDark)}>
+      {isDark ? "Light" : "Dark"} mode
+    </button>
+  );
+}
+```
+
+## CSS Variable Reference
+
+| Variable | Light default | Dark default | Usage |
+|----------|--------------|--------------|-------|
+| `--background` | White | Dark gray | Page background |
+| `--foreground` | Dark gray | White | Text color |
+| `--card` | White | Darker gray | Card background |
+| `--primary` | Blue | Blue | Primary button color |
+| `--secondary` | Light gray | Darker gray | Secondary button color |
+| `--destructive` | Red | Red | Error/danger colors |
+| `--muted` | Light gray | Darker gray | Muted text and backgrounds |
+| `--accent` | Light gray | Darker gray | Accent elements |
+| `--border` | Light gray | Darker gray | Border colors |
+| `--input` | Light gray | Darker gray | Input borders |
+| `--ring` | Blue | Blue | Focus ring color |
+
+## Customizing Colors
+
+Edit the CSS variables in `src/app/globals.css` to change the theme colors. Use [shadcn/ui's theme generator](https://ui.shadcn.com/themes) to create new color palettes.
+
+## Related
+
+- [Auth Components](./auth-components) — Form components using these tokens
+- [Config Schema](../reference/config-schema) — Full config reference

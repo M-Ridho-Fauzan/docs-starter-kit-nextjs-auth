@@ -1,0 +1,72 @@
+---
+title: Environment Variables
+description: All environment variables for the Next.js 16 Auth Starter Kit. Database URL, auth secret, OAuth credentials, and email provider config.
+---
+
+# Environment Variables
+
+All environment variables are defined in `.env` (copied from `.env.example`).
+
+## Required
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
+| `BETTER_AUTH_SECRET` | Secret for JWT signing (32+ chars) | `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | Public URL of your app | `http://localhost:3000` |
+
+## Optional — Email (Resend)
+
+To send verification and password reset emails, configure a Resend API key. Without this, emails are logged to the console in development.
+
+| Variable | Description |
+|----------|-------------|
+| `RESEND_API_KEY` | Resend API key for sending emails |
+
+## Optional — OAuth Providers
+
+Each provider is disabled by default. Enable in `auth.config.ts` after setting credentials.
+
+### GitHub
+
+| Variable | Description |
+|----------|-------------|
+| `GITHUB_CLIENT_ID` | GitHub OAuth App client ID |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App client secret |
+
+### Google
+
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+
+### Custom Providers
+
+For custom providers (Discord, Twitter, Apple, etc.):
+
+| Variable | Description |
+|----------|-------------|
+| `DISCORD_CLIENT_ID` | Discord OAuth client ID |
+| `DISCORD_CLIENT_SECRET` | Discord OAuth client secret |
+
+Variable names follow the pattern: `<PROVIDER>_CLIENT_ID` and `<PROVIDER>_CLIENT_SECRET`.
+
+## Generating `.env.example`
+
+The project includes a generator that reads your `auth.config.ts` and produces a complete `.env.example`:
+
+```bash
+pnpm generate-env
+```
+
+This script:
+1. Reads your resolved auth config
+2. Detects which features are enabled
+3. Generates `.env.example` with only the variables you need
+
+## Related
+
+- [Installation](./installation.md) — Setup guide
+- [Configuration](./configuration.md) — All config options
+- [CLI Tools](../reference/cli-tools.md) — Environment generator reference

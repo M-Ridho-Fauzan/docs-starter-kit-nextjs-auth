@@ -1,0 +1,160 @@
+---
+title: Sistem Peran & Izin
+description: Kontrol akses berbasis peran untuk Next.js 16 dengan Better Auth. Konfigurasi peran, peran bawaan, utilitas server, dan hooks klien.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Sistem Peran & Izin
+
+Kontrol akses berbasis peran sederhana menggunakan `additionalFields` dari Better Auth.
+
+## Konfigurasi
+
+### Mengaktifkan peran
+
+```typescript
+import { defineAuthConfig } from "@/auth/config";
+
+export default defineAuthConfig({
+  features: {
+    roles: {
+      enabled: true,
+      defaultRole: "user",
+      roles: ["user", "admin"],
+    },
+  },
+});
+```
+
+### Opsi konfigurasi
+
+| Opsi | Tipe | Standar | Deskripsi |
+|------|------|---------|-----------|
+| `enabled` | `boolean` | `false` | Aktifkan atau nonaktifkan sistem peran |
+| `defaultRole` | `string` | `"user"` | Peran bawaan yang diberikan saat pendaftaran |
+| `roles` | `string[]` | `["user", "admin"]` | Peran yang valid (berfungsi sebagai enum) |
+
+## Cara kerjanya
+
+Field `role` ditambahkan ke skema pengguna melalui `user.additionalFields` dari Better Auth. Sifatnya:
+
+- **Tidak dapat diisi pengguna** — `input: false` berarti selalu diatur oleh sistem.
+- **Wajib** — setiap pengguna mendapatkan peran saat pendaftaran.
+- **Bawaan** — menggunakan `config.features.roles.defaultRole`.
+
+### Penetapan peran bawaan saat registrasi
+
+Ketika pengguna baru mendaftar melalui `auth.api.signUpEmail()`, Better Auth secara otomatis menetapkan `defaultValue` (dari `config.features.roles.defaultRole`) ke field `role` pengguna. Tidak perlu logika Server Action kustom.
+
+### Migrasi database
+
+Aktifkan `roles` di `auth.config.ts`, lalu jalankan migrasi database:
+
+```bash
+# Prisma
+npx prisma migrate dev --name add-role-field
+
+# Drizzle / Kysely
+# Buat dan jalankan migrasi untuk menambahkan kolom `role` (text/enum) ke tabel user.
+```
+
+## Penggunaan sisi server
+
+### `hasRole`
+
+```typescript
+import { hasRole } from "@/lib/auth/server-utils";
+import { auth } from "@/auth/server";
+import { headers } from "next/headers";
+
+const session = await auth.api.getSession({ headers: await headers() });
+
+if (hasRole(session, "admin")) {
+  // Izinkan aksi khusus admin
+}
+
+if (hasRole(session, ["admin", "editor"])) {
+  // Izinkan admin atau editor
+}
+```
+
+| Param | Tipe | Deskripsi |
+|-------|------|-----------|
+| `session` | `Session \| null \| undefined` | Sesi server dari `auth.api.getSession()` |
+| `role` | `string \| string[]` | Peran tunggal atau daftar peran yang diterima |
+
+Mengembalikan `boolean` — `true` jika pengguna memiliki salah satu peran.
+
+### `getUserRole`
+
+```typescript
+import { getUserRole } from "@/lib/auth/server-utils";
+
+const session = await getServerSession();
+const role = getUserRole(session); // "user" | "admin" | undefined
+```
+
+Mengembalikan string peran pengguna, atau `undefined` jika belum login.
+
+## Hooks sisi klien
+
+### `useRole`
+
+```tsx
+import { useRole } from "@/hooks/use-role";
+
+function ProfileBadge() {
+  const role = useRole();
+  return <span>Role: {role ?? "guest"}</span>;
+}
+```
+
+Mengembalikan string peran pengguna dari sesi, atau `undefined` jika belum login.
+
+### `useHasRole`
+
+```tsx
+import { useHasRole } from "@/hooks/use-has-role";
+
+function AdminPanel() {
+  const isAdmin = useHasRole("admin");
+  if (!isAdmin) return null;
+  return <div>Admin panel</div>;
+}
+```
+
+| Param | Tipe | Deskripsi |
+|-------|------|-----------|
+| `role` | `string \| string[]` | Peran tunggal atau daftar peran yang diterima |
+
+Mengembalikan `boolean` — `true` jika pengguna memiliki salah satu peran.
+
+## Integrasi Middleware
+
+Proxy (`src/proxy.ts`) membaca `auth.config.ts` untuk menentukan batasan peran:
+
+```typescript
+// auth.config.ts
+ui: {
+  roleRestrictions: {
+    "/admin": ["admin"],
+  },
+}
+```
+
+Pengguna yang tidak terautentikasi dan pengguna tanpa peran yang diperlukan akan diarahkan ulang dari rute yang dibatasi.
+
+## Terkait
+
+- [Middleware](../api/middleware) — Proteksi rute
+- [Server Utilities](../api/server-utils) — Semua utilitas server
+- [Database Schema](../database/schema-reference) — Model pengguna dengan field peran

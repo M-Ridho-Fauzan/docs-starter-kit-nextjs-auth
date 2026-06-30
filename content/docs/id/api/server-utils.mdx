@@ -1,0 +1,133 @@
+---
+title: Referensi Server Utilities
+description: Server utilities untuk Next.js 16 Auth Starter Kit. Fungsi getServerSession, hasRole, getUserRole untuk server components dan server actions.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi Server Utilities
+
+Server utilities dari `src/lib/auth/server-utils.ts`. Gunakan di Server Components dan Server Actions.
+
+## `getServerSession`
+
+Wrapper ringan di atas `auth.api.getSession()` yang secara otomatis menyuntikkan request headers.
+
+```typescript
+import { getServerSession } from "@/lib/auth/server-utils";
+
+// Server Component
+export default async function DashboardPage() {
+  const session = await getServerSession();
+
+  if (!session) {
+    return <p>Silakan masuk untuk mengakses halaman ini.</p>;
+  }
+
+  return <p>Selamat datang, {session.user.name}!</p>;
+}
+```
+
+```typescript
+import { getServerSession } from "@/lib/auth/server-utils";
+
+// Server Action
+export async function deleteAccount() {
+  const session = await getServerSession();
+  if (!session) throw new Error("Unauthorized");
+  // Lanjutkan dengan penghapusan
+}
+```
+
+| Mengembalikan | Deskripsi |
+|---------------|-----------|
+| `Session \| null` | Objek session dengan field `user` dan `session`, atau `null` jika tidak terautentikasi |
+
+## `getUserRole`
+
+Mengembalikan string peran pengguna dari session.
+
+```typescript
+import { getUserRole, getServerSession } from "@/lib/auth/server-utils";
+
+const session = await getServerSession();
+const role = getUserRole(session); // "user" | "admin" | undefined
+```
+
+| Param | Type | Deskripsi |
+|-------|------|-----------|
+| `session` | `Session \| null \| undefined` | Session dari `getServerSession()` atau `auth.api.getSession()` |
+
+Mengembalikan `string | undefined` — peran pengguna, atau `undefined` jika belum login.
+
+## `hasRole`
+
+Memeriksa apakah pengguna yang terautentikasi memiliki peran tertentu.
+
+```typescript
+import { hasRole, getServerSession } from "@/lib/auth/server-utils";
+
+const session = await getServerSession();
+
+if (hasRole(session, "admin")) {
+  // Izinkan aksi khusus admin
+}
+
+if (hasRole(session, ["admin", "editor"])) {
+  // Izinkan admin atau editor
+}
+```
+
+| Param | Type | Deskripsi |
+|-------|------|-----------|
+| `session` | `Session \| null \| undefined` | Session server |
+| `role` | `string \| string[]` | Peran tunggal atau daftar peran yang diterima |
+
+Mengembalikan `boolean` — `true` jika pengguna memiliki salah satu peran yang ditentukan.
+
+## Pola Penggunaan
+
+### Protected Server Component
+
+```typescript
+import { getServerSession, hasRole } from "@/lib/auth/server-utils";
+
+export default async function AdminPage() {
+  const session = await getServerSession();
+
+  if (!hasRole(session, "admin")) {
+    return <p>Akses ditolak</p>;
+  }
+
+  return <div>Konten admin</div>;
+}
+```
+
+### Protected Server Action
+
+```typescript
+import { getServerSession, hasRole } from "@/lib/auth/server-utils";
+
+"use server";
+export async function adminAction() {
+  const session = await getServerSession();
+  if (!hasRole(session, "admin")) {
+    throw new Error("Forbidden");
+  }
+  // Lakukan aksi admin
+}
+```
+
+## Terkait
+
+- [Server Actions](./server-actions) — Semua form actions
+- [Middleware](./middleware) — Perlindungan tingkat rute
+- [Roles](../auth-features/roles) — Referensi sistem peran

@@ -1,0 +1,82 @@
+---
+title: Variabel Lingkungan
+description: Semua variabel lingkungan untuk Next.js 16 Auth Starter Kit. URL database, rahasia auth, kredensial OAuth, dan konfigurasi penyedia email.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Variabel Lingkungan
+
+Semua variabel lingkungan didefinisikan di `.env` (disalin dari `.env.example`).
+
+## Wajib
+
+| Variabel | Deskripsi | Contoh |
+|----------|-----------|--------|
+| `DATABASE_URL` | String koneksi PostgreSQL | `postgresql://user:pass@host:5432/db` |
+| `BETTER_AUTH_SECRET` | Rahasia untuk penandatanganan JWT (32+ karakter) | `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | URL publik aplikasi Anda | `http://localhost:3000` |
+
+## Opsional — Email (Resend)
+
+Untuk mengirim email verifikasi dan reset kata sandi, konfigurasikan kunci API Resend. Tanpa ini, email akan dicatat ke konsol dalam mode pengembangan.
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `RESEND_API_KEY` | Kunci API Resend untuk mengirim email |
+
+## Opsional — Penyedia OAuth
+
+Setiap penyedia dinonaktifkan secara bawaan. Aktifkan di `auth.config.ts` setelah mengatur kredensial.
+
+### GitHub
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `GITHUB_CLIENT_ID` | ID klien Aplikasi OAuth GitHub |
+| `GITHUB_CLIENT_SECRET` | Rahasia klien Aplikasi OAuth GitHub |
+
+### Google
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `GOOGLE_CLIENT_ID` | ID klien OAuth Google |
+| `GOOGLE_CLIENT_SECRET` | Rahasia klien OAuth Google |
+
+### Penyedia Kustom
+
+Untuk penyedia kustom (Discord, Twitter, Apple, dll.):
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `DISCORD_CLIENT_ID` | ID klien OAuth Discord |
+| `DISCORD_CLIENT_SECRET` | Rahasia klien OAuth Discord |
+
+Nama variabel mengikuti pola: `<PROVIDER>_CLIENT_ID` dan `<PROVIDER>_CLIENT_SECRET`.
+
+## Membuat `.env.example`
+
+Proyek ini menyertakan generator yang membaca `auth.config.ts` Anda dan menghasilkan `.env.example` yang lengkap:
+
+```bash
+pnpm generate-env
+```
+
+Skrip ini:
+1. Membaca konfigurasi auth Anda yang telah di-resolve
+2. Mendeteksi fitur mana yang diaktifkan
+3. Menghasilkan `.env.example` hanya dengan variabel yang Anda butuhkan
+
+## Terkait
+
+- [Instalasi](./installation) — Panduan setup
+- [Konfigurasi](./configuration) — Semua opsi konfigurasi
+- [Alat CLI](../reference/cli-tools) — Referensi generator lingkungan

@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://starterkit-auth-nextjs.vercel.app
+
+# Sitemaps
+Sitemap: https://starterkit-auth-nextjs.vercel.app/sitemap.xml

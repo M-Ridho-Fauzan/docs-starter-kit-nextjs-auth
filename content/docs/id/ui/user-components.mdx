@@ -1,0 +1,87 @@
+---
+title: Komponen UI Pengguna
+description: Komponen UI untuk pengguna pada Next.js 16 Auth Starter Kit. Profil pengguna, pengaturan autentikasi dua faktor, verifikasi TOTP, dan tampilan kode cadangan.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Komponen UI Pengguna
+
+Komponen untuk interaksi pengguna yang telah terautentikasi.
+
+## Daftar Komponen
+
+| Komponen | Berkas | Deskripsi |
+|----------|--------|-----------|
+| `UserProfile` | `src/components/user/user-profile.tsx` | Kartu profil pengguna dengan avatar, nama, email, dan tautan 2FA |
+| `TwoFactorSetupForm` | `src/components/auth/two-factor-setup-form.tsx` | Pengaturan 2FA dengan kode QR |
+| `TwoFactorVerifyForm` | `src/components/auth/two-factor-verify-form.tsx` | Entri kode TOTP saat login |
+| `BackupCodesDisplay` | `src/components/auth/backup-codes-display.tsx` | Menampilkan dan membuat ulang kode cadangan |
+
+## `UserProfile`
+
+Menampilkan informasi profil pengguna yang telah terautentikasi.
+
+```tsx
+import { UserProfile } from "@/components/user/user-profile";
+
+<UserProfile twoFactorSettingsPath="/settings/2fa" />
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `twoFactorSettingsPath` | `string` | tidak | Path ke halaman pengaturan 2FA (default: `/settings/2fa`) |
+
+## `TwoFactorSetupForm`
+
+Form pengaturan untuk mengaktifkan autentikasi dua faktor TOTP.
+
+```tsx
+import { TwoFactorSetupForm } from "@/components/auth/two-factor-setup-form";
+
+<TwoFactorSetupForm />
+```
+
+1. Pengguna memasukkan password untuk konfirmasi
+2. Kode QR dihasilkan untuk dipindai dengan aplikasi authenticator
+3. Kode cadangan ditampilkan untuk disimpan
+
+## `TwoFactorVerifyForm`
+
+Form verifikasi TOTP selama alur login 2FA.
+
+```tsx
+import { TwoFactorVerifyForm } from "@/components/auth/two-factor-verify-form";
+
+<TwoFactorVerifyForm />
+```
+
+Me-render: input kode TOTP, tombol submit.
+
+## `BackupCodesDisplay`
+
+Menampilkan kode cadangan dengan opsi membuat ulang.
+
+```tsx
+import { BackupCodesDisplay } from "@/components/auth/backup-codes-display";
+
+<BackupCodesDisplay codes={["ABC123", "DEF456", "GHI789"]} />
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `codes` | `string[]` | ya | Array kode cadangan untuk ditampilkan |
+
+## Terkait
+
+- [Komponen Auth](./auth-components) — Form login, registrasi, dan password
+- [Autentikasi Dua Faktor](../auth-features/two-factor) — Alur 2FA
+- [Tema](./theming) — Kustomisasi tema

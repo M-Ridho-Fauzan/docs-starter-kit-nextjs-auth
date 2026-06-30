@@ -1,0 +1,85 @@
+---
+title: Autentikasi Dua Faktor (TOTP)
+description: Autentikasi dua faktor TOTP untuk Next.js 16 dengan Better Auth. Aktifkan 2FA, konfigurasi TOTP, kelola kode cadangan, dan tangani alur verifikasi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Autentikasi Dua Faktor (TOTP)
+
+Autentikasi dua faktor menggunakan Time-based one-time password (TOTP) dari Better Auth.
+
+## Konfigurasi
+
+### Mengaktifkan autentikasi dua faktor
+
+```typescript
+import { defineAuthConfig } from "@/auth/config";
+
+export default defineAuthConfig({
+  features: {
+    twoFactor: {
+      enabled: true, // mengaktifkan dukungan TOTP
+    },
+  },
+});
+```
+
+### Opsi konfigurasi
+
+| Opsi | Tipe | Standar | Deskripsi |
+|------|------|---------|-----------|
+| `enabled` | `boolean` | `false` | Aktifkan atau nonaktifkan dukungan 2FA |
+| `methods` | `"totp"[]` | `["totp"]` | Metode 2FA yang diizinkan (hanya TOTP) |
+
+## Cara kerjanya
+
+### Alur login dengan 2FA
+
+1. Pengguna mengirimkan email/password melalui form login.
+2. Jika pengguna memiliki 2FA diaktifkan, `auth.api.signInEmail()` mengembalikan `{ twoFactorRedirect: true, twoFactorMethods: ["totp"] }` alih-alih token sesi.
+3. Server Action menangkap ini dan mengarahkan ulang ke `/2fa/verify`.
+4. Pengguna memasukkan kode TOTP dari aplikasi autentikator.
+5. `auth.api.verifyTOTP()` memvalidasi kode dan menyelesaikan sesi.
+6. Pengguna diarahkan ke `/dashboard`.
+
+### Alur pengaturan (mengaktifkan 2FA)
+
+1. Pengguna yang sudah login membuka `/settings/2fa`.
+2. Pengguna memasukkan password untuk konfirmasi keamanan.
+3. `auth.api.enableTwoFactor()` menghasilkan secret TOTP dan kode cadangan.
+4. Kode QR ditampilkan untuk dipindai dengan aplikasi autentikator.
+5. Kode cadangan ditampilkan — pengguna harus menyimpannya dengan aman.
+
+## Server Actions
+
+Semua action TOTP ada di `src/lib/auth/actions/two-factor.ts`.
+
+| Action | Deskripsi |
+|--------|-----------|
+| `verifyTotpAction` | Verifikasi kode TOTP saat login (mengarahkan ulang jika berhasil) |
+| `getTOTPURIAction` | Mendapatkan URI TOTP untuk tampilan kode QR |
+| `enableTwoFactorAction` | Mengaktifkan 2FA, mengembalikan URI dan kode cadangan |
+| `disableTwoFactorAction` | Menonaktifkan 2FA untuk pengguna saat ini |
+| `generateBackupCodesAction` | Menghasilkan kode cadangan baru |
+
+## Halaman
+
+| Halaman | Rute | Deskripsi |
+|---------|------|-----------|
+| Verifikasi 2FA | `/2fa/verify` | Masukkan kode TOTP saat login |
+| Pengaturan - 2FA | `/settings/2fa` | Aktifkan/nonaktifkan 2FA, kelola cadangan |
+
+## Terkait
+
+- [Email & Password](./email-password) — Registrasi dan login
+- [User Components](../ui/user-components) — Form pengaturan 2FA
+- [Config Schema](../reference/config-schema) — Referensi konfigurasi lengkap

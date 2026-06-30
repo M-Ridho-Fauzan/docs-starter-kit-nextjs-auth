@@ -1,0 +1,96 @@
+---
+title: Tema & Mode Gelap
+description: Konfigurasi tema dan dukungan mode gelap untuk Next.js 16 Auth Starter Kit. Variabel CSS shadcn/ui, Tailwind CSS v4, dan sistem kelas .dark.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Tema & Mode Gelap
+
+Starter kit ini menggunakan shadcn/ui dengan Tailwind CSS v4 dan mendukung mode gelap melalui variabel CSS.
+
+## Cara Kerjanya
+
+Tema menggunakan properti kustom CSS (variabel) yang didefinisikan di `src/app/globals.css`. Kelas `.dark` beralih antara skema warna terang dan gelap.
+
+```css
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222.2 84% 4.9%);
+  /* ... token lainnya */
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  /* ... token lainnya */
+}
+```
+
+## Konfigurasi
+
+Tema diatur di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  ui: {
+    theme: "shadcn", // saat ini satu-satunya tema
+  },
+});
+```
+
+## Toggle Mode Gelap
+
+Untuk menambahkan toggle mode gelap ke aplikasi Anda:
+
+```tsx
+"use client";
+import { useTheme } from "@/hooks/use-theme"; // atau implementasi Anda sendiri
+
+function ThemeToggle() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
+
+  return (
+    <button onClick={() => setIsDark(!isDark)}>
+      {isDark ? "Terang" : "Gelap"}
+    </button>
+  );
+}
+```
+
+## Referensi Variabel CSS
+
+| Variabel | Default Terang | Default Gelap | Penggunaan |
+|----------|----------------|---------------|------------|
+| `--background` | Putih | Abu-abu gelap | Latar belakang halaman |
+| `--foreground` | Abu-abu gelap | Putih | Warna teks |
+| `--card` | Putih | Abu-abu lebih gelap | Latar belakang kartu |
+| `--primary` | Biru | Biru | Warna tombol utama |
+| `--secondary` | Abu-abu terang | Abu-abu lebih gelap | Warna tombol sekunder |
+| `--destructive` | Merah | Merah | Warna error/bahaya |
+| `--muted` | Abu-abu terang | Abu-abu lebih gelap | Teks dan latar belakang redup |
+| `--accent` | Abu-abu terang | Abu-abu lebih gelap | Elemen aksen |
+| `--border` | Abu-abu terang | Abu-abu lebih gelap | Warna batas |
+| `--input` | Abu-abu terang | Abu-abu lebih gelap | Batas input |
+| `--ring` | Biru | Biru | Warna cincin fokus |
+
+## Menyesuaikan Warna
+
+Edit variabel CSS di `src/app/globals.css` untuk mengubah warna tema. Gunakan [pembuat tema shadcn/ui](https://ui.shadcn.com/themes) untuk membuat palet warna baru.
+
+## Terkait
+
+- [Komponen Auth](./auth-components) — Komponen form yang menggunakan token ini
+- [Skema Konfigurasi](../reference/config-schema) — Referensi konfigurasi lengkap

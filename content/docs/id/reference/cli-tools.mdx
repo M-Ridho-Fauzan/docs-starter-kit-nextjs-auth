@@ -1,0 +1,97 @@
+---
+title: Referensi Alat CLI
+description: Alat CLI untuk Next.js 16 Auth Starter Kit. Wizard pengaturan untuk konfigurasi proyek interaktif dan generator variabel lingkungan.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi Alat CLI
+
+Starter kit mencakup dua alat CLI untuk pengalaman pengembang.
+
+## Wizard Pengaturan
+
+CLI interaktif untuk mengkonfigurasi proyek Anda dari awal.
+
+```bash
+pnpm setup
+```
+
+Wizard akan menanyakan pertanyaan tentang proyek Anda:
+
+1. **Adapter database** — Prisma, Drizzle, atau Kysely
+2. **Autentikasi email/password** — Aktifkan atau nonaktifkan
+3. **Verifikasi email** — Perlu verifikasi atau tidak
+4. **Provider OAuth** — GitHub, Google, atau kustom
+5. **Autentikasi dua faktor** — Aktifkan atau nonaktifkan
+6. **Sistem peran** — Aktifkan atau nonaktifkan
+
+Setelah menjawab, wizard akan menghasilkan file `auth.config.ts` lengkap dengan konfigurasi yang Anda pilih.
+
+### Cara kerjanya
+
+Wizard menggunakan `@clack/prompts` untuk prompt interaktif dan menghasilkan file konfigurasi melalui `generateAuthConfigFile()` dari `scripts/lib/write-config.ts`.
+
+```typescript
+// Struktur yang dihasilkan
+{
+  database: { adapter: "prisma", url: process.env.DATABASE_URL! },
+  features: {
+    emailPassword: { enabled: true },
+    oauth: { github: { enabled: false } },
+    twoFactor: { enabled: false },
+    roles: { enabled: false },
+  },
+  // ...
+}
+```
+
+## Generator Variabel Lingkungan
+
+Menghasilkan file `.env.example` lengkap dari `auth.config.ts` Anda.
+
+```bash
+pnpm generate-env
+```
+
+Generator ini:
+
+1. Membaca konfigurasi auth yang sudah di-resolve
+2. Mendeteksi fitur mana yang diaktifkan
+3. Mengumpulkan env var yang diperlukan berdasarkan fitur yang diaktifkan
+4. Menghasilkan `.env.example` hanya dengan variabel yang Anda butuhkan
+
+### Contoh keluaran
+
+```bash
+# Required
+DATABASE_URL=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+
+# OAuth Providers
+# GitHub
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Email (Resend)
+RESEND_API_KEY=
+```
+
+### Cara kerjanya
+
+Generator menggunakan `collectEnvVars()` dari `scripts/lib/generate-env.ts` untuk menelusuri konfigurasi dan mengidentifikasi variabel lingkungan yang diperlukan.
+
+## Terkait
+
+- [Instalasi](../get-started/installation) — Panduan pengaturan
+- [Konfigurasi](../get-started/configuration) — Referensi konfigurasi
+- [Variabel Lingkungan](../get-started/environment-variables) — Referensi env

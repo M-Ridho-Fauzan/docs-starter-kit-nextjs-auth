@@ -1,0 +1,74 @@
+---
+title: Contoh Layout Terproteksi
+description: Contoh layout terproteksi dengan autentikasi dan pemeriksaan peran untuk Next.js 16 App Router. Menggunakan getServerSession dan hasRole untuk proteksi rute.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Contoh Layout Terproteksi
+
+Contoh lengkap layout halaman terproteksi dengan autentikasi dan akses berbasis peran.
+
+## Sumber
+
+Contoh lengkap ada di `examples/protected-layout.example.tsx`.
+
+## Kode
+
+```typescript
+// app/dashboard/layout.tsx
+import { redirect } from "next/navigation";
+import { getServerSession, hasRole } from "@/lib/auth/server-utils";
+
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="border-b">
+        <div className="container mx-auto flex items-center justify-between p-4">
+          <h1 className="text-xl font-bold">My App</h1>
+          <nav className="flex items-center gap-4">
+            <span>{session.user.email}</span>
+            {hasRole(session, "admin") && (
+              <a href="/admin" className="text-blue-600">Admin</a>
+            )}
+          </nav>
+        </div>
+      </header>
+      <main className="container mx-auto p-4">
+        {children}
+      </main>
+    </div>
+  );
+}
+```
+
+## Pola Utama
+
+1. **Pemeriksaan autentikasi** — `getServerSession()` di bagian atas layout
+2. **Redirect** — pengguna tidak terautentikasi diarahkan ke `/login`
+3. **UI berbasis peran** — `hasRole()` menampilkan tautan admin secara kondisional
+4. **Server Component** — berfungsi karena `getServerSession()` bersifat asinkron dan membaca header dari konteks permintaan
+
+## Terkait
+
+- [Utilitas Server](../api/server-utils) — `getServerSession`, `hasRole`
+- [Middleware](../api/middleware) — Proteksi tingkat rute
+- [Peran](../auth-features/roles) — Referensi sistem peran

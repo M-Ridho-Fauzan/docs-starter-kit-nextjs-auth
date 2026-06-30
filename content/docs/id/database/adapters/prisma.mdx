@@ -1,0 +1,133 @@
+---
+title: Adapter Prisma
+description: Adapter basis data Prisma untuk Next.js 16 Auth Starter Kit. Panduan pengaturan, konfigurasi, dukungan serverless untuk Neon dan Supabase, serta penggunaan klien kustom.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Adapter Prisma
+
+Hubungkan Better Auth ke PostgreSQL melalui Prisma.
+
+## Dependensi
+
+Semua ini dideklarasikan sebagai `optionalDependencies` — hanya diinstal jika Anda menggunakan Prisma:
+
+- `prisma` — CLI Prisma (untuk migrasi, pembuatan)
+- `@prisma/client` — Pustaka klien Prisma
+- `@prisma/adapter-pg` — Adapter driver PostgreSQL Prisma (Prisma 7+)
+
+## Pengaturan
+
+### 1. Konfigurasi adapter
+
+Di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Generate klien
+
+```bash
+npx prisma generate
+```
+
+Ini berjalan secara otomatis pada `pnpm install` melalui skrip `postinstall`.
+
+### 3. Sinkronkan basis data
+
+```bash
+npx prisma db push
+```
+
+### 4. (Opsional) Buat migrasi
+
+Untuk produksi, gunakan Prisma Migrate daripada `db push`:
+
+```bash
+npx prisma migrate dev --name init
+```
+
+## URL Basis Data
+
+String koneksi secara default menggunakan `DATABASE_URL` di `.env`:
+
+```bash
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Konfigurasi Serverless
+
+### Neon (PostgreSQL serverless)
+
+```bash
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```bash
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Klien Kustom
+
+Untuk pengaturan lanjutan (misalnya, konfigurasi PrismaClient kustom), berikan klien yang sudah diinisialisasi:
+
+```typescript
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(process.env.DATABASE_URL!),
+});
+
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma",
+    client: prisma, // menggunakan ini daripada membuat dari url
+  },
+});
+```
+
+## Skema
+
+Skema Prisma berada di `prisma/schema.prisma` dan mendefinisikan empat model:
+
+- `user` — Akun pengguna dengan dukungan peran
+- `session` — Sesi autentikasi
+- `account` — Akun OAuth dan kredensial
+- `verification` — Verifikasi email dan token reset kata sandi
+
+Lihat [Referensi Skema](../schema-reference) untuk detail field.
+
+## Berganti Provider
+
+Untuk beralih dari PostgreSQL ke provider basis data lain, perbarui `prisma.schema.prisma` dan `createPrismaAdapter()`:
+
+```typescript
+// src/auth/adapters/prisma.adapter.ts
+return prismaAdapter(prisma, {
+  provider: "postgresql", // ubah ke "mysql", "sqlite", "cockroachdb", dll.
+});
+```
+
+## Terkait
+
+- [Ikhtisar Basis Data](../overview) — Perbandingan adapter
+- [Referensi Skema](../schema-reference) — Referensi field model
+- [Panduan Migrasi Prisma](../../guides/prisma-migration) — Manajemen skema

@@ -1,0 +1,152 @@
+---
+title: Referensi Server Actions
+description: Semua server actions di Next.js 16 Auth Starter Kit. Aksi email/password, verifikasi, reset password, dan 2FA dengan tipe.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi Server Actions
+
+Semua server actions adalah form actions yang menerima `FormData` dan mengembalikan `AuthActionResult`.
+
+## Tipe Hasil Auth
+
+```typescript
+interface AuthSuccessResult<T = void> {
+  success: true;
+  message?: string;
+  data?: T;
+}
+
+interface AuthErrorResult {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
+type AuthActionResult<T = void> = AuthSuccessResult<T> | AuthErrorResult;
+```
+
+## Email / Password
+
+Sumber: `src/lib/auth/actions/email-password.ts`
+
+### `signInWithEmailPassword`
+
+Aksi login. Mengarahkan ke `ui.redirectAfterLogin` jika berhasil, atau ke `/2fa/verify` jika pengguna mengaktifkan 2FA.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `email` | `string` | ya |
+| `password` | `string` | ya |
+
+### `signUpWithEmailPassword`
+
+Aksi pendaftaran. Mengarahkan jika berhasil.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `name` | `string` | ya |
+| `email` | `string` | ya |
+| `password` | `string` | ya |
+
+## Verifikasi Email
+
+Sumber: `src/lib/auth/actions/email-verification.ts`
+
+### `resendVerificationEmail`
+
+Meminta email verifikasi baru.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `email` | `string` | ya |
+
+### `verifyEmail`
+
+Memproses token verifikasi.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `token` | `string` | ya |
+
+## Reset Password
+
+Sumber: `src/lib/auth/actions/password-reset.ts`
+
+### `requestPasswordResetAction`
+
+Meminta email reset password.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `email` | `string` | ya |
+
+### `resetPasswordAction`
+
+Mengatur password baru menggunakan token reset.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `token` | `string` | ya |
+| `password` | `string` | ya |
+
+## Autentikasi Dua Faktor
+
+Sumber: `src/lib/auth/actions/two-factor.ts`
+
+### `verifyTotpAction`
+
+Memverifikasi kode TOTP saat login. Mengarahkan jika berhasil.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `code` | `string` | ya |
+
+### `getTOTPURIAction`
+
+Mendapatkan URI TOTP untuk menampilkan kode QR.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `password` | `string` | ya |
+
+### `enableTwoFactorAction`
+
+Mengaktifkan 2FA. Mengembalikan URI TOTP dan kode cadangan.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `password` | `string` | ya |
+
+### `disableTwoFactorAction`
+
+Menonaktifkan 2FA.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `password` | `string` | ya |
+
+### `generateBackupCodesAction`
+
+Menghasilkan kode cadangan baru.
+
+| Field | Type | Required |
+|-------|------|----------|
+| `password` | `string` | ya |
+
+## Terkait
+
+- [React Hooks](./hooks) — Hooks sisi klien yang membungkus actions ini
+- [Server Utilities](./server-utils) — `getServerSession`, `hasRole`, `getUserRole`
+- [Middleware](./middleware) — Perlindungan rute

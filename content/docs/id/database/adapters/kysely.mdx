@@ -1,0 +1,110 @@
+---
+title: Adapter Kysely
+description: Adapter basis data Kysely untuk Next.js 16 Auth Starter Kit. Panduan pengaturan, konfigurasi, keamanan tipe, dukungan serverless, dan penggunaan klien kustom.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Adapter Kysely
+
+Hubungkan Better Auth ke PostgreSQL melalui Kysely.
+
+## Dependensi
+
+Semua ini dideklarasikan sebagai `optionalDependencies` — hanya diinstal jika Anda menggunakan Kysely:
+
+- `kysely` — Query builder Kysely
+
+## Pengaturan
+
+### 1. Konfigurasi adapter
+
+Di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "kysely",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Definisikan tipe basis data
+
+Kysely menggunakan antarmuka TypeScript untuk keamanan tipe:
+
+```typescript
+interface Database {
+  user: UserTable;
+  session: SessionTable;
+  account: AccountTable;
+  verification: VerificationTable;
+}
+```
+
+Lihat dokumentasi Better Auth untuk definisi tipe lengkap.
+
+### 3. Push atau migrasi
+
+```bash
+# Buat dan jalankan migrasi
+pnpm db:generate
+pnpm db:migrate
+```
+
+## URL Basis Data
+
+```bash
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Konfigurasi Serverless
+
+### Neon
+
+```bash
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```bash
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Klien Kustom
+
+Berikan instance Kysely yang sudah diinisialisasi:
+
+```typescript
+import { Kysely } from "kysely";
+import { PostgresDialect } from "kysely";
+import { Pool } from "pg";
+
+const db = new Kysely<Database>({
+  dialect: new PostgresDialect({
+    pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+  }),
+});
+
+export default defineAuthConfig({
+  database: {
+    adapter: "kysely",
+    client: db, // menggunakan ini daripada membuat dari url
+  },
+});
+```
+
+## Terkait
+
+- [Ikhtisar Basis Data](../overview) — Perbandingan adapter
+- [Referensi Skema](../schema-reference) — Referensi field model

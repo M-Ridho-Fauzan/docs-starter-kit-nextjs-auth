@@ -1,0 +1,4 @@
+{
+  "title": "Auth Features",
+  "pages": ["email-password", "email-verification", "password-reset", "oauth", "two-factor", "roles"]
+}

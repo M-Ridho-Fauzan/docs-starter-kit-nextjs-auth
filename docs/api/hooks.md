@@ -1,0 +1,185 @@
+---
+title: React Hooks Reference
+description: All React hooks in the Next.js 16 Auth Starter Kit. useAuth, useSession, form hooks, 2FA, roles, and OAuth hooks with examples.
+---
+
+# React Hooks Reference
+
+All hooks are client-side (`"use client"`) and work with React 19.
+
+## Auth & Session
+
+### `useAuth`
+
+Returns the auth context value (session state and provider).
+
+```tsx
+import { useAuth } from "@/hooks/use-auth";
+
+function AuthStatus() {
+  const { isPending, session } = useAuth();
+  if (isPending) return <div>Loading...</div>;
+  return <div>{session ? "Logged in" : "Not logged in"}</div>;
+}
+```
+
+### `useSession`
+
+Returns the current session with refresh capability.
+
+```tsx
+import { useSession } from "@/hooks/use-session";
+
+function UserEmail() {
+  const { data: session, isPending } = useSession();
+  if (isPending) return null;
+  return <span>{session?.user?.email}</span>;
+}
+```
+
+## Form Hooks
+
+Form hooks wrap server actions with `useActionState` (React 19).
+
+### `useLoginForm`
+
+```tsx
+import { useLoginForm } from "@/hooks/use-login";
+
+function LoginPage() {
+  const [state, formAction, pending] = useLoginForm();
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" required />
+      <input name="password" type="password" required />
+      <button type="submit" disabled={pending}>Sign in</button>
+    </form>
+  );
+}
+```
+
+### `useRegisterForm`
+
+```tsx
+import { useRegisterForm } from "@/hooks/use-register";
+
+function RegisterPage() {
+  const [state, formAction, pending] = useRegisterForm();
+}
+```
+
+### `useForgotPasswordForm`
+
+```tsx
+import { useForgotPasswordForm } from "@/hooks/use-forgot-password";
+
+function ForgotPasswordPage() {
+  const [state, formAction, pending] = useForgotPasswordForm();
+}
+```
+
+### `useResetPasswordForm`
+
+```tsx
+import { useResetPasswordForm } from "@/hooks/use-reset-password";
+
+function ResetPasswordPage() {
+  const [state, formAction, pending] = useResetPasswordForm();
+}
+```
+
+### `useResendVerificationForm`
+
+```tsx
+import { useResendVerificationForm } from "@/hooks/use-resend-verification";
+
+function ResendPage() {
+  const [state, formAction, pending] = useResendVerificationForm();
+}
+```
+
+### `useTwoFactorSetupForm`
+
+```tsx
+import { useTwoFactorSetupForm } from "@/hooks/use-two-factor-setup-form";
+
+function TwoFactorSetupPage() {
+  const [state, formAction, pending] = useTwoFactorSetupForm();
+}
+```
+
+### `useVerifyTotpForm`
+
+```tsx
+import { useVerifyTotpForm } from "@/hooks/use-verify-totp-form";
+
+function TwoFactorVerifyPage() {
+  const [state, formAction, pending] = useVerifyTotpForm();
+}
+```
+
+## OAuth
+
+### `useSocialLogin`
+
+```tsx
+import { useSocialLogin } from "@/hooks/use-social-login";
+
+function SocialLogin() {
+  const { signIn } = useSocialLogin();
+  return <button onClick={() => signIn("github", "/dashboard")}>GitHub</button>;
+}
+```
+
+## Roles
+
+### `useRole`
+
+Returns the current user's role string.
+
+```tsx
+import { useRole } from "@/hooks/use-role";
+
+function RoleBadge() {
+  const role = useRole();
+  return <span>Role: {role ?? "guest"}</span>;
+}
+```
+
+### `useHasRole`
+
+Check if the current user has a specific role.
+
+```tsx
+import { useHasRole } from "@/hooks/use-has-role";
+
+function AdminButton() {
+  const isAdmin = useHasRole("admin");
+  if (!isAdmin) return null;
+  return <button>Admin action</button>;
+}
+```
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `role` | `string \| string[]` | Single role or list of accepted roles |
+
+Returns `boolean`.
+
+## Backup Codes
+
+### `useBackupCodes`
+
+```tsx
+import { useBackupCodes } from "@/hooks/use-backup-codes";
+
+function BackupCodesPage() {
+  const [state, formAction, pending] = useBackupCodes();
+}
+```
+
+## Related
+
+- [Server Actions](./server-actions.md) — Actions these hooks wrap
+- [Server Utilities](./server-utils.md) — Server-side equivalents
+- [Auth Components](../ui/auth-components.md) — UI components using these hooks

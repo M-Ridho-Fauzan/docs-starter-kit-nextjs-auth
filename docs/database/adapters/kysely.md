@@ -1,0 +1,100 @@
+---
+title: Kysely Adapter
+description: Kysely database adapter for the Next.js 16 Auth Starter Kit. Setup guide, configuration, type safety, serverless support, and custom client usage.
+---
+
+# Kysely Adapter
+
+Connect Better Auth to PostgreSQL via Kysely.
+
+## Dependencies
+
+These are declared as `optionalDependencies` — only installed if you use Kysely:
+
+- `kysely` — Kysely query builder
+
+## Setup
+
+### 1. Configure the adapter
+
+In `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "kysely",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Define the database types
+
+Kysely uses TypeScript interfaces for type safety:
+
+```typescript
+interface Database {
+  user: UserTable;
+  session: SessionTable;
+  account: AccountTable;
+  verification: VerificationTable;
+}
+```
+
+Refer to the Better Auth documentation for the complete type definitions.
+
+### 3. Push or migrate
+
+```bash
+# Create and run a migration
+pnpm db:generate
+pnpm db:migrate
+```
+
+## Database URL
+
+```env
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Serverless Configurations
+
+### Neon
+
+```env
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```env
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Custom Client
+
+Pass a pre-initialized Kysely instance:
+
+```typescript
+import { Kysely } from "kysely";
+import { PostgresDialect } from "kysely";
+import { Pool } from "pg";
+
+const db = new Kysely<Database>({
+  dialect: new PostgresDialect({
+    pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+  }),
+});
+
+export default defineAuthConfig({
+  database: {
+    adapter: "kysely",
+    client: db, // uses this instead of creating one from url
+  },
+});
+```
+
+## Related
+
+- [Database Overview](../overview.md) — Adapter comparison
+- [Schema Reference](../schema-reference.md) — Model field reference

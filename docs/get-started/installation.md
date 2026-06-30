@@ -1,0 +1,100 @@
+---
+title: Installation
+description: Installation guide for the Next.js 16 Auth Starter Kit. Prerequisites, cloning, package install, environment setup, and database config.
+---
+
+# Installation
+
+Get the Next.js 16 Auth Starter Kit running on your machine.
+
+## Prerequisites
+
+- **Node.js** 20+
+- **pnpm** 10+ (`npm install -g pnpm`)
+- **PostgreSQL** database (local or cloud, e.g., [Neon](https://neon.tech), [Supabase](https://supabase.com))
+- **Git** (for cloning the repository)
+
+## Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/your-org/starterkit-auth-nextjs.git my-app
+cd my-app
+```
+
+## Step 2: Install Dependencies
+
+```bash
+pnpm install
+```
+
+This runs `postinstall` automatically, which generates the Prisma client via `prisma generate`. If you use Drizzle or Kysely instead of Prisma, the `postinstall` script safely skips the Prisma step.
+
+## Step 3: Configure Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your values. At minimum, you need:
+
+```env
+# Required
+DATABASE_URL=postgresql://user:password@host:5432/db
+BETTER_AUTH_SECRET=your-secret-key-at-least-32-chars
+BETTER_AUTH_URL=http://localhost:3000
+
+# Optional — only if using the feature
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+RESEND_API_KEY=
+```
+
+Generate a secure `BETTER_AUTH_SECRET`:
+
+```bash
+openssl rand -base64 32
+```
+
+## Step 4: Sync the Database
+
+```bash
+npx prisma db push
+```
+
+This creates the required tables (`user`, `session`, `account`, `verification`) in your database.
+
+## Step 5: Start the Development Server
+
+```bash
+pnpm dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000). You should see the login page if authentication is configured correctly.
+
+## Verification
+
+After installation, confirm your setup:
+
+1. Open `http://localhost:3000` — redirects to login or dashboard
+2. Register a new user at `/register`
+3. Sign in at `/login`
+4. Access the dashboard at `/dashboard`
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `prisma generate` fails | Ensure `DATABASE_URL` is set in `.env` and PostgreSQL is running |
+| `BETTER_AUTH_SECRET` is weak | Generate a 32+ character random string |
+| Login always fails | Check `auth.config.ts` has `features.emailPassword.enabled: true` |
+| Page shows "not found" (404) | Ensure `src/proxy.ts` is correctly configured as the middleware |
+
+## Related
+
+- [Quick Start](./quick-start.md) — 5-minute guide
+- [Configuration](./configuration.md) — All config options
+- [Environment Variables](./environment-variables.md) — Full env reference

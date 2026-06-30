@@ -1,0 +1,98 @@
+---
+title: Panduan Deployment
+description: Deploy Next.js 16 Auth Starter Kit ke production di Vercel. Variabel lingkungan, pengaturan database, konfigurasi build, dan daftar periksa produksi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Panduan Deployment
+
+Deploy starter kit ke production di Vercel.
+
+## Prasyarat
+
+- Database PostgreSQL (Neon, Supabase, AWS RDS, dll.)
+- Akun Vercel
+- Repositori Git yang sudah diatur
+
+## Langkah 1: Siapkan Database
+
+Buat database PostgreSQL untuk production. Untuk serverless:
+
+```bash
+# Neon
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+
+# Supabase
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+Push skema:
+
+```bash
+npx prisma db push
+```
+
+Atau buat migrasi untuk production:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Langkah 2: Konfigurasi Variabel Lingkungan
+
+Atur variabel berikut di dashboard proyek Vercel Anda:
+
+| Variabel | Wajib | Deskripsi |
+|----------|-------|-----------|
+| `DATABASE_URL` | ya | String koneksi database production |
+| `BETTER_AUTH_SECRET` | ya | String acak 32+ karakter |
+| `BETTER_AUTH_URL` | ya | URL publik aplikasi Anda (contoh: `https://my-app.vercel.app`) |
+| `GITHUB_CLIENT_ID` | tidak | Client ID OAuth GitHub |
+| `GITHUB_CLIENT_SECRET` | tidak | Client secret OAuth GitHub |
+| `GOOGLE_CLIENT_ID` | tidak | Client ID OAuth Google |
+| `GOOGLE_CLIENT_SECRET` | tidak | Client secret OAuth Google |
+
+## Langkah 3: Deploy ke Vercel
+
+```bash
+# Menggunakan Vercel CLI
+vercel --prod
+
+# Atau hubungkan repositori Git Anda di dashboard Vercel
+```
+
+Proyek ini menggunakan `next build` untuk build produksi. Semua route API Better Auth dikompilasi sebagai fungsi serverless.
+
+## Daftar Periksa Produksi
+
+- [ ] Generate `BETTER_AUTH_SECRET` yang kuat (gunakan `openssl rand -base64 32`)
+- [ ] Atur `BETTER_AUTH_URL` ke domain produksi Anda
+- [ ] Konfigurasi URL callback OAuth di dashboard penyedia
+- [ ] Siapkan penyedia email (Resend, SendGrid, dll.) untuk email verifikasi/reset
+- [ ] Jalankan `prisma migrate deploy` untuk migrasi database
+- [ ] Aktifkan HTTPS (otomatis dengan Vercel)
+- [ ] Siapkan monitoring dan error tracking (opsional)
+
+## URL Callback OAuth
+
+Saat melakukan deployment, perbarui URL callback penyedia OAuth Anda:
+
+| Penyedia | URL Callback |
+|----------|-------------|
+| GitHub | `https://your-app.vercel.app/api/auth/callback/github` |
+| Google | `https://your-app.vercel.app/api/auth/callback/google` |
+
+## Terkait
+
+- [Instalasi](../get-started/installation) — Pengaturan lokal
+- [Variabel Lingkungan](../get-started/environment-variables) — Referensi env lengkap
+- [Panduan Testing](./testing) — Menguji deployment Anda

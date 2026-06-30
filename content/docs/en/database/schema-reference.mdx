@@ -1,0 +1,125 @@
+---
+title: Database Schema Reference
+description: Database schema models for the Next.js 16 Auth Starter Kit. Reference for user, session, account, and verification tables used by Better Auth.
+---
+
+# Database Schema Reference
+
+Better Auth requires four database models. The Prisma schema is shown below — other adapters use equivalent table structures.
+
+## User
+
+```prisma
+model user {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      session[]
+  accounts      account[]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `String` | Primary key, auto-generated CUID |
+| `name` | `String?` | User's display name |
+| `email` | `String` | Email address (unique) |
+| `emailVerified` | `Boolean` | Whether email is verified |
+| `image` | `String?` | Avatar URL |
+| `role` | `String?` | User role for RBAC (null when roles disabled) |
+| `createdAt` | `DateTime` | Account creation timestamp |
+| `updatedAt` | `DateTime` | Last update timestamp |
+
+## Session
+
+```prisma
+model session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `String` | Primary key |
+| `expiresAt` | `DateTime` | Session expiration timestamp |
+| `token` | `String` | Unique session token |
+| `ipAddress` | `String?` | IP address at login time |
+| `userAgent` | `String?` | User agent at login time |
+| `userId` | `String` | Foreign key to user |
+
+## Account
+
+```prisma
+model account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([accountId, providerId])
+  @@index([userId])
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `accountId` | `String` | Provider-specific account ID |
+| `providerId` | `String` | Provider name (e.g., "github", "google") |
+| `userId` | `String` | Foreign key to user |
+| `password` | `String?` | Hashed password (for email/password auth) |
+| `accessToken` | `String?` | OAuth access token |
+| `refreshToken` | `String?` | OAuth refresh token |
+
+## Verification
+
+```prisma
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `identifier` | `String` | Identifier for the verification (email, etc.) |
+| `value` | `String` | Verification token or code |
+| `expiresAt` | `DateTime` | Expiration timestamp |
+
+## Related
+
+- [Database Overview](./overview) — Adapter system
+- [Prisma Adapter](./adapters/prisma) — Prisma setup
+- [Drizzle Adapter](./adapters/drizzle) — Drizzle setup
+- [Kysely Adapter](./adapters/kysely) — Kysely setup

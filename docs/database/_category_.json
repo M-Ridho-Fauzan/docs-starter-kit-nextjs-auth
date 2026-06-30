@@ -1,0 +1,6 @@
+{
+  "label": "Database",
+  "position": 3,
+  "collapsed": false,
+  "link": { "type": "generated-index", "description": "Database adapters and schema reference." }
+}

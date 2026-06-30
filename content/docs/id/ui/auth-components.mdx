@@ -1,0 +1,120 @@
+---
+title: Komponen UI Auth
+description: Komponen auth untuk Next.js 16 Starter Kit. Login, registrasi, lupa-password, reset-password, kirim-ulang-verifikasi, dan login sosial.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Komponen UI Auth
+
+Komponen form auth berbasis shadcn/ui. Semua komponen menerima state `AuthActionResult` melalui `useActionState`.
+
+## Daftar Komponen
+
+| Komponen | Berkas | Deskripsi |
+|----------|--------|-----------|
+| `AuthLayout` | `src/components/auth/auth-layout.tsx` | Pembungkus halaman auth dengan judul |
+| `LoginForm` | `src/components/auth/login-form.tsx` | Form login email/password |
+| `RegisterForm` | `src/components/auth/register-form.tsx` | Form registrasi dengan nama, email, password |
+| `ForgotPasswordForm` | `src/components/auth/forgot-password-form.tsx` | Input email untuk tautan reset |
+| `ResetPasswordForm` | `src/components/auth/reset-password-form.tsx` | Form token + password baru |
+| `ResendVerificationForm` | `src/components/auth/resend-verification-form.tsx` | Input email untuk kirim ulang |
+| `SocialLoginButtons` | `src/components/auth/social-login-buttons.tsx` | Tombol provider OAuth |
+
+## `AuthLayout`
+
+Membungkus halaman auth dengan tata letak yang konsisten.
+
+```tsx
+import { AuthLayout } from "@/components/auth/auth-layout";
+
+<AuthLayout title="Masuk">
+  <LoginForm />
+</AuthLayout>
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `title` | `string` | ya | Judul halaman yang ditampilkan di header kartu |
+| `children` | `ReactNode` | tidak | Konten form |
+
+## `LoginForm`
+
+```tsx
+import { LoginForm } from "@/components/auth/login-form";
+
+<LoginForm />
+```
+
+Me-render: input email, input password, tombol submit, tautan lupa-password, dan tautan registrasi.
+
+## `RegisterForm`
+
+```tsx
+import { RegisterForm } from "@/components/auth/register-form";
+
+<RegisterForm />
+```
+
+Me-render: input nama, email, password, tombol submit, dan tautan masuk.
+
+## `ForgotPasswordForm`
+
+```tsx
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+
+<ForgotPasswordForm />
+```
+
+Me-render: input email, tombol submit, dan tautan kembali-ke-masuk.
+
+## `ResetPasswordForm`
+
+```tsx
+import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+
+<ResetPasswordForm token="reset-token-here" />
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `token` | `string` | ya | Token reset password dari URL |
+
+## `ResendVerificationForm`
+
+```tsx
+import { ResendVerificationForm } from "@/components/auth/resend-verification-form";
+
+<ResendVerificationForm />
+```
+
+Me-render: input email dan tombol submit.
+
+## `SocialLoginButtons`
+
+```tsx
+import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
+
+<SocialLoginButtons providers={["github", "google"]} redirectTo="/dashboard" />
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `providers` | `string[]` | ya | Daftar ID provider OAuth yang diaktifkan |
+| `redirectTo` | `string` | tidak | URL redirect setelah login berhasil |
+
+Me-render tombol untuk setiap provider, atau tidak menampilkan apa pun jika tidak ada provider yang diaktifkan.
+
+## Terkait
+
+- [Komponen Pengguna](./user-components) — Komponen profil dan 2FA
+- [Tema](./theming) — Kustomisasi tema
+- [React Hooks](../api/hooks) — Hooks yang digunakan oleh komponen-komponen ini

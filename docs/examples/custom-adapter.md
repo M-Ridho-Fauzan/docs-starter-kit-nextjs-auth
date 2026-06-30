@@ -1,0 +1,73 @@
+---
+title: Custom Adapter Example
+description: Example of implementing a custom database adapter for the Next.js 16 Auth Starter Kit. Create, register, and configure a custom adapter.
+---
+
+# Custom Adapter Example
+
+Complete example of implementing and registering a custom database adapter.
+
+## 1. Create the adapter factory
+
+```typescript
+// src/auth/adapters/planetscale.adapter.ts
+import type { DatabaseConfig } from "../config/types";
+
+interface DatabaseLike {
+  query: (sql: string, params?: unknown[]) => Promise<unknown>;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
+export function createPlanetScaleAdapter(config: DatabaseConfig): unknown {
+  const db = config.client as DatabaseLike | undefined
+    ?? createPlanetScaleClient(config.url);
+
+  return adapterFunction(db, {
+    provider: "mysql",
+  });
+}
+
+function createPlanetScaleClient(url?: string): DatabaseLike {
+  const { connect } = require("@planetscale/database");
+  return { query: connect({ url }).execute, connect: async () => {}, disconnect: async () => {} };
+}
+```
+
+## 2. Register the adapter
+
+```typescript
+// src/auth/server.ts
+switch (config.database.adapter) {
+  // ... existing cases
+  case "planetscale": {
+    const { createPlanetScaleAdapter } = require("./adapters/planetscale.adapter");
+    registerAdapter("planetscale", createPlanetScaleAdapter);
+    break;
+  }
+}
+```
+
+## 3. Configure it
+
+```typescript
+// auth.config.ts
+export default defineAuthConfig({
+  database: {
+    adapter: "planetscale",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+## Key Patterns
+
+1. **Factory function** — accepts `DatabaseConfig`, returns a Better Auth-compatible adapter
+2. **Lazy dependency** — optional packages are `require()`-d inside the function, not at module level
+3. **`client` support** — allows users to pass a pre-initialized client
+4. **Registration** — adapter is registered in the switch statement in `server.ts`
+
+## Related
+
+- [Database Overview](../database/overview.md) — Adapter system
+- [Advanced Customization](../guides/advanced-customization.md) — Custom adapters guide

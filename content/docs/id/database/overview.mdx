@@ -1,0 +1,67 @@
+---
+title: Ikhtisar Basis Data
+description: Sistem adapter basis data untuk Next.js 16 Auth Starter Kit. Pilih antara adapter Prisma, Drizzle, atau Kysely untuk PostgreSQL.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Ikhtisar Basis Data
+
+Starter kit ini mendukung tiga adapter basis data. Semuanya menggunakan PostgreSQL.
+
+## Konsep Adapter
+
+Sistem adapter menggunakan pola registri (registry pattern):
+
+1. **Daftarkan (Register)** — factory adapter didaftarkan berdasarkan nama (`"prisma"`, `"drizzle"`, `"kysely"`)
+2. **Resolusi (Resolve)** — adapter aktif di-resolve dari `config.database.adapter`
+3. **Buat (Create)** — factory membuat instance adapter yang kompatibel dengan Better Auth
+
+Registri dimuat secara lazy — hanya modul adapter yang dikonfigurasikan yang diimpor saat runtime. Jika Anda menggunakan Prisma, paket Drizzle dan Kysely tidak pernah dimuat.
+
+## Memilih Adapter
+
+| Adapter | Terbaik untuk | Paket |
+|---------|---------------|-------|
+| **Prisma** | PostgreSQL standar, serverless (Neon, Supabase), proyek tim | `@prisma/client`, `prisma` |
+| **Drizzle** | TypeScript-first, ringan, sintaks seperti SQL | `drizzle-orm` |
+| **Kysely** | Keamanan tipe penuh, query builder seperti SQL | `kysely` |
+
+## Konfigurasi
+
+Atur adapter pilihan Anda di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma", // "prisma" | "drizzle" | "kysely"
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+Semua adapter membutuhkan string koneksi PostgreSQL di `DATABASE_URL`.
+
+## Berganti Adapter
+
+Untuk beralih dari satu adapter ke adapter lainnya:
+
+1. Ubah `config.database.adapter` di `auth.config.ts`
+2. Instal paket adapter baru (jika belum terinstal)
+3. Migrasikan skema basis data Anda ke format ORM baru
+4. Hapus paket adapter lama (opsional)
+
+## Terkait
+
+- [Adapter Prisma](./adapters/prisma) — Pengaturan dan konfigurasi
+- [Adapter Drizzle](./adapters/drizzle) — Pengaturan dan konfigurasi
+- [Adapter Kysely](./adapters/kysely) — Pengaturan dan konfigurasi
+- [Referensi Skema](./schema-reference) — Definisi model basis data

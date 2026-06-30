@@ -1,0 +1,110 @@
+---
+title: Auth UI Components
+description: Auth components for the Next.js 16 Starter Kit. Login, register, forgot-password, reset-password, resend-verification, and social login.
+---
+
+# Auth UI Components
+
+shadcn/ui-based auth form components. All components accept `AuthActionResult` state via `useActionState`.
+
+## Component List
+
+| Component | File | Description |
+|-----------|------|-------------|
+| `AuthLayout` | `src/components/auth/auth-layout.tsx` | Auth page layout wrapper with title |
+| `LoginForm` | `src/components/auth/login-form.tsx` | Email/password login form |
+| `RegisterForm` | `src/components/auth/register-form.tsx` | Registration form with name, email, password |
+| `ForgotPasswordForm` | `src/components/auth/forgot-password-form.tsx` | Email input for reset link |
+| `ResetPasswordForm` | `src/components/auth/reset-password-form.tsx` | Token + new password form |
+| `ResendVerificationForm` | `src/components/auth/resend-verification-form.tsx` | Email input for resend |
+| `SocialLoginButtons` | `src/components/auth/social-login-buttons.tsx` | OAuth provider buttons |
+
+## `AuthLayout`
+
+Wraps auth pages with consistent layout.
+
+```tsx
+import { AuthLayout } from "@/components/auth/auth-layout";
+
+<AuthLayout title="Sign in">
+  <LoginForm />
+</AuthLayout>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | yes | Page title displayed in the card header |
+| `children` | `ReactNode` | no | Form content |
+
+## `LoginForm`
+
+```tsx
+import { LoginForm } from "@/components/auth/login-form";
+
+<LoginForm />
+```
+
+Renders: email input, password input, submit button, forgot-password link, and register link.
+
+## `RegisterForm`
+
+```tsx
+import { RegisterForm } from "@/components/auth/register-form";
+
+<RegisterForm />
+```
+
+Renders: name, email, password inputs, submit button, and sign-in link.
+
+## `ForgotPasswordForm`
+
+```tsx
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+
+<ForgotPasswordForm />
+```
+
+Renders: email input, submit button, and back-to-sign-in link.
+
+## `ResetPasswordForm`
+
+```tsx
+import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+
+<ResetPasswordForm token="reset-token-here" />
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `token` | `string` | yes | Password reset token from URL |
+
+## `ResendVerificationForm`
+
+```tsx
+import { ResendVerificationForm } from "@/components/auth/resend-verification-form";
+
+<ResendVerificationForm />
+```
+
+Renders: email input and submit button.
+
+## `SocialLoginButtons`
+
+```tsx
+import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
+
+<SocialLoginButtons providers={["github", "google"]} redirectTo="/dashboard" />
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `providers` | `string[]` | yes | List of enabled OAuth provider IDs |
+| `redirectTo` | `string` | no | Redirect URL after successful login |
+
+Renders a button for each provider, or nothing if no providers are enabled.
+
+## Related
+
+- [User Components](./user-components.md) — Profile and 2FA components
+- [Theming](./theming.md) — Theme customization
+- [React Hooks](../api/hooks.md) — Hooks used by these components

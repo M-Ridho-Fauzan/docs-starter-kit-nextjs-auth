@@ -1,0 +1,4 @@
+{
+  "title": "Get Started",
+  "pages": ["installation", "quick-start", "configuration", "environment-variables", "project-structure"]
+}

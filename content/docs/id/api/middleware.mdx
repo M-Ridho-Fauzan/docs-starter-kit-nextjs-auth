@@ -1,0 +1,93 @@
+---
+title: Middleware / Perlindungan Rute
+description: Middleware perlindungan rute untuk Next.js 16 menggunakan konvensi proxy. Konfigurasi rute yang dilindungi dan pembatasan akses berbasis peran dari auth.config.ts.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Middleware / Perlindungan Rute
+
+Perlindungan rute menggunakan konvensi proxy Next.js 16 (`src/proxy.ts`). Proxy memeriksa autentikasi dan akses berbasis peran sebelum menyajikan halaman yang dilindungi.
+
+## Cara Kerja
+
+Proxy berjalan pada setiap permintaan. Prosesnya:
+
+1. Memeriksa apakah path yang diminta cocok dengan rute yang dilindungi
+2. Jika dilindungi, memanggil `auth.api.getSession()` untuk memverifikasi autentikasi
+3. Jika tidak terautentikasi, redirect ke `/login`
+4. Jika dibatasi peran, memeriksa peran pengguna terhadap peran yang diizinkan
+5. Jika akses ditolak, redirect ke dashboard
+
+## Konfigurasi
+
+Rute yang dilindungi dan pembatasan peran dikonfigurasi di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  ui: {
+    redirectAfterLogin: "/dashboard",
+    redirectAfterLogout: "/login",
+    protectedPaths: ["/dashboard", "/settings", "/admin"],
+    roleRestrictions: {
+      "/admin": ["admin"],
+    },
+  },
+});
+```
+
+| Opsi | Tipe | Default | Deskripsi |
+|------|------|---------|-----------|
+| `protectedPaths` | `string[]` | `["/dashboard", "/settings"]` | Rute yang memerlukan autentikasi |
+| `roleRestrictions` | `Record<string, string[]>` | `{"/admin": ["admin"]}` | Rute yang dibatasi berdasarkan peran |
+
+## Perilaku
+
+| Skenario | Hasil |
+|----------|-------|
+| Tidak terautentikasi, mengakses rute yang dilindungi | Redirect ke `/login` |
+| Terautentikasi, mengakses rute yang dilindungi | Diizinkan |
+| Terautentikasi, peran tidak mencukupi | Redirect ke `/dashboard` |
+| Terautentikasi, mengakses rute publik | Diizinkan |
+| Tidak terautentikasi, mengakses rute publik | Diizinkan |
+
+## Menambahkan Rute yang Dilindungi
+
+Tambahkan path ke `protectedPaths` di `auth.config.ts`:
+
+```typescript
+ui: {
+  protectedPaths: ["/dashboard", "/settings", "/admin", "/profile"],
+}
+```
+
+## Menambahkan Rute dengan Pembatasan Peran
+
+```typescript
+ui: {
+  roleRestrictions: {
+    "/admin": ["admin"],
+    "/moderator": ["admin", "moderator"],
+  },
+}
+```
+
+## Kasus Khusus
+
+- **Rute API** — Proxy melewati rute API (`/api/*`) tanpa pemeriksaan
+- **File statis** — Aset statis dan `_next/*` dikecualikan oleh matcher
+- **Halaman Auth** — Halaman login, register, dan halaman auth lainnya selalu publik
+
+## Terkait
+
+- [Roles](../auth-features/roles) — Referensi sistem peran
+- [Server Utilities](./server-utils) — Pengecekan `hasRole()`
+- [Skema Konfigurasi](../reference/config-schema) — Referensi konfigurasi lengkap

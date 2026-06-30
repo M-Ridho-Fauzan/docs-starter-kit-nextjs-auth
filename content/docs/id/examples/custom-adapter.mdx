@@ -1,0 +1,83 @@
+---
+title: Contoh Adapter Kustom
+description: Contoh implementasi adapter database kustom untuk Next.js 16 Auth Starter Kit. Membuat, mendaftarkan, dan mengonfigurasi adapter kustom.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Contoh Adapter Kustom
+
+Contoh lengkap implementasi dan pendaftaran adapter database kustom.
+
+## 1. Membuat factory adapter
+
+```typescript
+// src/auth/adapters/planetscale.adapter.ts
+import type { DatabaseConfig } from "../config/types";
+
+interface DatabaseLike {
+  query: (sql: string, params?: unknown[]) => Promise<unknown>;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+}
+
+export function createPlanetScaleAdapter(config: DatabaseConfig): unknown {
+  const db = config.client as DatabaseLike | undefined
+    ?? createPlanetScaleClient(config.url);
+
+  return adapterFunction(db, {
+    provider: "mysql",
+  });
+}
+
+function createPlanetScaleClient(url?: string): DatabaseLike {
+  const { connect } = require("@planetscale/database");
+  return { query: connect({ url }).execute, connect: async () => {}, disconnect: async () => {} };
+}
+```
+
+## 2. Mendaftarkan adapter
+
+```typescript
+// src/auth/server.ts
+switch (config.database.adapter) {
+  // ... existing cases
+  case "planetscale": {
+    const { createPlanetScaleAdapter } = require("./adapters/planetscale.adapter");
+    registerAdapter("planetscale", createPlanetScaleAdapter);
+    break;
+  }
+}
+```
+
+## 3. Mengonfigurasinya
+
+```typescript
+// auth.config.ts
+export default defineAuthConfig({
+  database: {
+    adapter: "planetscale",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+## Pola Utama
+
+1. **Fungsi factory** — menerima `DatabaseConfig`, mengembalikan adapter yang kompatibel dengan Better Auth
+2. **Dependensi lazy** — paket opsional di-`require()` di dalam fungsi, bukan di tingkat modul
+3. **Dukungan `client`** — memungkinkan pengguna memberikan klien yang sudah diinisialisasi
+4. **Pendaftaran** — adapter didaftarkan dalam pernyataan switch di `server.ts`
+
+## Terkait
+
+- [Ikhtisar Database](../database/overview) — Sistem adapter
+- [Kustomisasi Lanjutan](../guides/advanced-customization) — Panduan adapter kustom

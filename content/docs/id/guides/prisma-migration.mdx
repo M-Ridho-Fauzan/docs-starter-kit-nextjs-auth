@@ -1,0 +1,78 @@
+---
+title: Panduan Migrasi Prisma
+description: Manajemen skema database untuk Next.js 16 Auth Starter Kit. Menjalankan migrasi Prisma, mendorong perubahan skema, dan menangani pembaruan database produksi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Panduan Migrasi Prisma
+
+Kelola perubahan skema database untuk adaptor Prisma.
+
+## Pengembangan
+
+Untuk pembuatan prototipe cepat, gunakan `db push` untuk menyinkronkan perubahan skema secara langsung:
+
+```bash
+npx prisma db push
+```
+
+Ini aman untuk pengembangan lokal. Perintah ini membuat atau memperbarui tabel agar sesuai dengan `prisma/schema.prisma`.
+
+## Produksi
+
+Untuk production, gunakan Prisma Migrate untuk membuat migrasi yang terversi:
+
+```bash
+# Buat migrasi dari perubahan skema
+npx prisma migrate dev --name deskripsikan-perubahan
+
+# Terapkan migrasi di production
+npx prisma migrate deploy
+```
+
+## Alur Kerja
+
+### Menambahkan field
+
+1. Edit `prisma/schema.prisma` untuk menambahkan field
+2. Buat migrasi: `npx prisma migrate dev --name tambah-nama-field`
+3. Tinjau SQL yang dihasilkan di `prisma/migrations/`
+4. Deploy: `npx prisma migrate deploy`
+
+### Menambahkan model
+
+1. Tambahkan definisi model ke `prisma/schema.prisma`
+2. Buat migrasi: `npx prisma migrate dev --name tambah-nama-model`
+3. Tinjau dan deploy
+
+## Lokasi Skema
+
+Skema Prisma berada di `prisma/schema.prisma`. Skema ini mendefinisikan empat model:
+
+- `user` — Akun pengguna
+- `session` — Sesi autentikasi
+- `account` — Akun OAuth dan kredensial
+- `verification` — Token verifikasi email dan reset password
+
+## Catatan Prisma 7
+
+Proyek ini menggunakan Prisma 7, yang memiliki model konfigurasi berbeda:
+
+- `datasource.url` TIDAK ada di `schema.prisma` — berada di `prisma.config.ts`
+- URL database berasal dari variabel lingkungan `DATABASE_URL`
+- Connection pooling menggunakan `@prisma/adapter-pg` sebagai pengganti opsi `datasourceUrl` yang sudah tidak digunakan
+
+## Terkait
+
+- [Adaptor Prisma](../database/adapters/prisma) — Pengaturan Prisma
+- [Referensi Skema](../database/schema-reference) — Referensi field model
+- [Ikhtisar Database](../database/overview) — Perbandingan adaptor

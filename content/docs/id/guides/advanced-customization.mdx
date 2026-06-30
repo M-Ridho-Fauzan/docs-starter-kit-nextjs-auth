@@ -1,0 +1,145 @@
+---
+title: Kustomisasi Lanjutan
+description: Kustomisasi lanjutan untuk Next.js 16 Starter Kit. Adaptor khusus, penyedia OAuth, plugin Better Auth, dan server actions.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Kustomisasi Lanjutan
+
+Perluas starter kit dengan adaptor, penyedia, dan plugin khusus.
+
+## Adaptor Database Khusus
+
+Implementasikan adaptor khusus dengan membuat factory adaptor dan mendaftarkannya.
+
+### 1. Buat factory adaptor
+
+```typescript
+// src/auth/adapters/custom.adapter.ts
+import type { DatabaseConfig } from "../config/types";
+
+export function createCustomAdapter(config: DatabaseConfig): unknown {
+  const client = config.client as YourClientType ?? createClient(config.url);
+  return adapterFunction(client, {
+    provider: "postgresql",
+  });
+}
+
+function createClient(url?: string): YourClientType {
+  // Inisialisasi klien database Anda
+}
+```
+
+### 2. Daftarkan adaptor
+
+Adaptor didaftarkan di `src/auth/server.ts`:
+
+```typescript
+case "custom": {
+  const { createCustomAdapter } = require("./adapters/custom.adapter");
+  registerAdapter("custom", createCustomAdapter);
+  break;
+}
+```
+
+### 3. Konfigurasi
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "custom",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+## Penyedia OAuth Kustom
+
+Tambahkan penyedia OAuth apa pun yang didukung oleh Better Auth melalui array `custom`:
+
+```typescript
+export default defineAuthConfig({
+  features: {
+    oauth: {
+      custom: [
+        {
+          id: "discord",
+          enabled: true,
+          clientId: process.env.DISCORD_CLIENT_ID!,
+          clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+        },
+      ],
+    },
+  },
+});
+```
+
+`id` harus sesuai dengan ID penyedia yang didukung oleh Better Auth.
+
+## Server Action Kustom
+
+Tambahkan server action baru mengikuti pola yang sudah ada:
+
+```typescript
+// src/lib/auth/actions/my-action.ts
+"use server";
+
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth/server";
+import type { AuthActionResult } from "./types";
+
+export async function myAction(
+  _prevState: AuthActionResult | null,
+  formData: FormData,
+): Promise<AuthActionResult> {
+  const value = formData.get("myField") as string;
+
+  if (!value) {
+    return {
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "Field wajib diisi." },
+    };
+  }
+
+  try {
+    await auth.api.someMethod({
+      body: { value },
+      headers: await headers(),
+    });
+    // return success atau redirect
+  } catch (err) {
+    return {
+      success: false,
+      error: { code: "500", message: "Terjadi kesalahan." },
+    };
+  }
+}
+```
+
+## Hook Kustom
+
+```typescript
+// src/hooks/use-my-action.ts
+import { useActionState } from "react";
+import { myAction } from "@/lib/auth/actions/my-action";
+
+export function useMyAction() {
+  return useActionState(myAction, null);
+}
+```
+
+## Terkait
+
+- [Ikhtisar Database](../database/overview) — Sistem adaptor
+- [OAuth](../auth-features/oauth) — Penyedia OAuth
+- [Server Actions](../api/server-actions) — Pola aksi

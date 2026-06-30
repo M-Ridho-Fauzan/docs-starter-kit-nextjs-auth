@@ -1,0 +1,106 @@
+---
+title: Drizzle Adapter
+description: Drizzle ORM database adapter for the Next.js 16 Auth Starter Kit. Setup guide, configuration, serverless support, and custom client usage.
+---
+
+# Drizzle Adapter
+
+Connect Better Auth to PostgreSQL via Drizzle ORM.
+
+## Dependencies
+
+These are declared as `optionalDependencies` — only installed if you use Drizzle:
+
+- `drizzle-orm` — Drizzle ORM core library
+
+## Setup
+
+### 1. Configure the adapter
+
+In `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "drizzle",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Define the database schema
+
+Drizzle requires you to define your schema matching the Better Auth models:
+
+```typescript
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  email: text("email").unique().notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  role: text("role"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+```
+
+Refer to the Better Auth documentation for the complete schema definition.
+
+### 3. Push or migrate
+
+```bash
+# Push schema directly
+pnpm db:push
+
+# Or create a migration
+pnpm db:generate
+pnpm db:migrate
+```
+
+## Database URL
+
+```bash
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Serverless Configurations
+
+### Neon
+
+```bash
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```bash
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Custom Client
+
+Pass a pre-initialized Drizzle instance:
+
+```typescript
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
+
+export default defineAuthConfig({
+  database: {
+    adapter: "drizzle",
+    client: db, // uses this instead of creating one from url
+  },
+});
+```
+
+## Related
+
+- [Database Overview](../overview) — Adapter comparison
+- [Schema Reference](../schema-reference) — Model field reference
+- [Prisma Migration Guide](../../guides/prisma-migration) — Schema management

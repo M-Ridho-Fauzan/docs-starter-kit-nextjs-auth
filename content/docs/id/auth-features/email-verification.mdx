@@ -1,0 +1,113 @@
+---
+title: Verifikasi Email
+description: Alur verifikasi email untuk Next.js 16 dengan Better Auth. Aktifkan verifikasi email, konfigurasi pengiriman email, dan kelola token verifikasi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Verifikasi Email
+
+Alur verifikasi email untuk Better Auth. Dipicu secara otomatis ketika `requireEmailVerification` diaktifkan.
+
+## Konfigurasi
+
+### Mengaktifkan verifikasi email
+
+Di `features.emailPassword`:
+
+```typescript
+import { defineAuthConfig } from "@/auth/config";
+
+export default defineAuthConfig({
+  features: {
+    emailPassword: {
+      enabled: true,
+      requireEmailVerification: true,
+    },
+  },
+});
+```
+
+### Menyediakan callback pengiriman email
+
+Di bagian `email` level atas:
+
+```typescript
+export default defineAuthConfig({
+  email: {
+    sendVerificationEmail: async ({ email, url, token }) => {
+      // Kirim email menggunakan penyedia pilihan Anda
+      console.log(`Verification URL for ${email}: ${url}`);
+    },
+  },
+  features: {
+    emailPassword: {
+      enabled: true,
+      requireEmailVerification: true,
+    },
+  },
+});
+```
+
+Jika tidak ada callback `sendVerificationEmail` yang disediakan, starter kit akan mencatat peringatan di mode development dan error di mode production.
+
+## Opsi Konfigurasi Email
+
+| Opsi | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `sendVerificationEmail` | `(params: { email, url, token }) => Promise<void>` | tidak | Callback untuk mengirim email verifikasi |
+| `sendPasswordResetEmail` | `(params: { email, url, token }) => Promise<void>` | tidak | Callback untuk mengirim email reset password |
+
+## Server Actions
+
+### `resendVerificationEmail`
+
+Form action untuk meminta email verifikasi baru.
+
+```typescript
+import { resendVerificationEmail } from "@/lib/auth/actions/email-verification";
+
+<form action={resendVerificationEmail}>
+  <input name="email" type="email" required />
+  <button type="submit">Resend verification</button>
+</form>
+```
+
+### `verifyEmail`
+
+Form action yang memproses token verifikasi.
+
+```typescript
+import { verifyEmail } from "@/lib/auth/actions/email-verification";
+
+<form action={verifyEmail}>
+  <input name="token" type="hidden" value={token} />
+  <button type="submit">Verify email</button>
+</form>
+```
+
+## Hook
+
+### `useResendVerificationForm`
+
+```tsx
+import { useResendVerificationForm } from "@/hooks/use-resend-verification";
+
+function ResendPage() {
+  const [state, formAction, pending] = useResendVerificationForm();
+}
+```
+
+## Terkait
+
+- [Email & Password](./email-password) — Registrasi dan login
+- [Reset Password](./password-reset) — Lupa/reset password
+- [Environment Variables](../get-started/environment-variables) — Pengaturan penyedia email

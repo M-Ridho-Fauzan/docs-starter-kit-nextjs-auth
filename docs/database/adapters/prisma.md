@@ -1,0 +1,123 @@
+---
+title: Prisma Adapter
+description: Prisma database adapter for the Next.js 16 Auth Starter Kit. Setup guide, configuration, serverless support for Neon and Supabase, and custom client usage.
+---
+
+# Prisma Adapter
+
+Connect Better Auth to PostgreSQL via Prisma.
+
+## Dependencies
+
+These are declared as `optionalDependencies` — only installed if you use Prisma:
+
+- `prisma` — Prisma CLI (for migrations, generation)
+- `@prisma/client` — Prisma client library
+- `@prisma/adapter-pg` — Prisma PostgreSQL driver adapter (Prisma 7+)
+
+## Setup
+
+### 1. Configure the adapter
+
+In `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Generate the client
+
+```bash
+npx prisma generate
+```
+
+This runs automatically on `pnpm install` via the `postinstall` script.
+
+### 3. Sync the database
+
+```bash
+npx prisma db push
+```
+
+### 4. (Optional) Create a migration
+
+For production, use Prisma Migrate instead of `db push`:
+
+```bash
+npx prisma migrate dev --name init
+```
+
+## Database URL
+
+The connection string defaults to `DATABASE_URL` in `.env`:
+
+```env
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Serverless Configurations
+
+### Neon (serverless PostgreSQL)
+
+```env
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```env
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Custom Client
+
+For advanced setups (e.g., custom PrismaClient configuration), pass a pre-initialized client:
+
+```typescript
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(process.env.DATABASE_URL!),
+});
+
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma",
+    client: prisma, // uses this instead of creating one from url
+  },
+});
+```
+
+## Schema
+
+The Prisma schema is at `prisma/schema.prisma` and defines four models:
+
+- `user` — User accounts with role support
+- `session` — Authentication sessions
+- `account` — OAuth accounts and credentials
+- `verification` — Email verification and password reset tokens
+
+See [Schema Reference](../schema-reference.md) for field details.
+
+## Provider Switching
+
+To switch from PostgreSQL to another database provider, update `prisma.schema.prisma` and `createPrismaAdapter()`:
+
+```typescript
+// src/auth/adapters/prisma.adapter.ts
+return prismaAdapter(prisma, {
+  provider: "postgresql", // change to "mysql", "sqlite", "cockroachdb", etc.
+});
+```
+
+## Related
+
+- [Database Overview](../overview.md) — Adapter comparison
+- [Schema Reference](../schema-reference.md) — Model field reference
+- [Prisma Migration Guide](../../guides/prisma-migration.md) — Schema management

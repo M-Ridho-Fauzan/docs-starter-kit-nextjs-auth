@@ -1,0 +1,88 @@
+---
+title: Deployment Guide
+description: Deploy the Next.js 16 Auth Starter Kit to production on Vercel. Environment variables, database setup, build configuration, and production checklist.
+---
+
+# Deployment Guide
+
+Deploy the starter kit to production on Vercel.
+
+## Prerequisites
+
+- A PostgreSQL database (Neon, Supabase, AWS RDS, etc.)
+- A Vercel account
+- Git repository set up
+
+## Step 1: Prepare the Database
+
+Create a production PostgreSQL database. For serverless:
+
+```bash
+# Neon
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+
+# Supabase
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+Push the schema:
+
+```bash
+npx prisma db push
+```
+
+Or create a migration for production:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Step 2: Configure Environment Variables
+
+Set these in your Vercel project dashboard:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | yes | Production database connection string |
+| `BETTER_AUTH_SECRET` | yes | Random 32+ character string |
+| `BETTER_AUTH_URL` | yes | Public URL of your app (e.g., `https://my-app.vercel.app`) |
+| `GITHUB_CLIENT_ID` | no | GitHub OAuth client ID |
+| `GITHUB_CLIENT_SECRET` | no | GitHub OAuth client secret |
+| `GOOGLE_CLIENT_ID` | no | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | no | Google OAuth client secret |
+
+## Step 3: Deploy to Vercel
+
+```bash
+# Using Vercel CLI
+vercel --prod
+
+# Or connect your Git repository in the Vercel dashboard
+```
+
+The project uses `next build` for production builds. All Better Auth API routes are compiled as serverless functions.
+
+## Production Checklist
+
+- [ ] Generate a strong `BETTER_AUTH_SECRET` (use `openssl rand -base64 32`)
+- [ ] Set `BETTER_AUTH_URL` to your production domain
+- [ ] Configure OAuth callback URLs in provider dashboards
+- [ ] Set up email provider (Resend, SendGrid, etc.) for verification/reset emails
+- [ ] Run `prisma migrate deploy` for database migrations
+- [ ] Enable HTTPS (automatic with Vercel)
+- [ ] Set up monitoring and error tracking (optional)
+
+## OAuth Callback URLs
+
+When deploying, update your OAuth provider callback URLs:
+
+| Provider | Callback URL |
+|----------|-------------|
+| GitHub | `https://your-app.vercel.app/api/auth/callback/github` |
+| Google | `https://your-app.vercel.app/api/auth/callback/google` |
+
+## Related
+
+- [Installation](../get-started/installation.md) — Local setup
+- [Environment Variables](../get-started/environment-variables.md) — Full env reference
+- [Testing Guide](./testing.md) — Testing your deployment

@@ -1,0 +1,195 @@
+---
+title: Referensi React Hooks
+description: Semua React hooks di Next.js 16 Auth Starter Kit. useAuth, useSession, form hooks, 2FA, roles, dan OAuth hooks dengan contoh.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi React Hooks
+
+Semua hooks berada di sisi klien (`"use client"`) dan bekerja dengan React 19.
+
+## Auth & Session
+
+### `useAuth`
+
+Mengembalikan nilai konteks auth (state session dan provider).
+
+```tsx
+import { useAuth } from "@/hooks/use-auth";
+
+function AuthStatus() {
+  const { isPending, session } = useAuth();
+  if (isPending) return <div>Memuat...</div>;
+  return <div>{session ? "Sudah login" : "Belum login"}</div>;
+}
+```
+
+### `useSession`
+
+Mengembalikan session saat ini dengan kemampuan refresh.
+
+```tsx
+import { useSession } from "@/hooks/use-session";
+
+function UserEmail() {
+  const { data: session, isPending } = useSession();
+  if (isPending) return null;
+  return <span>{session?.user?.email}</span>;
+}
+```
+
+## Form Hooks
+
+Form hooks membungkus server actions dengan `useActionState` (React 19).
+
+### `useLoginForm`
+
+```tsx
+import { useLoginForm } from "@/hooks/use-login";
+
+function LoginPage() {
+  const [state, formAction, pending] = useLoginForm();
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" required />
+      <input name="password" type="password" required />
+      <button type="submit" disabled={pending}>Masuk</button>
+    </form>
+  );
+}
+```
+
+### `useRegisterForm`
+
+```tsx
+import { useRegisterForm } from "@/hooks/use-register";
+
+function RegisterPage() {
+  const [state, formAction, pending] = useRegisterForm();
+}
+```
+
+### `useForgotPasswordForm`
+
+```tsx
+import { useForgotPasswordForm } from "@/hooks/use-forgot-password";
+
+function ForgotPasswordPage() {
+  const [state, formAction, pending] = useForgotPasswordForm();
+}
+```
+
+### `useResetPasswordForm`
+
+```tsx
+import { useResetPasswordForm } from "@/hooks/use-reset-password";
+
+function ResetPasswordPage() {
+  const [state, formAction, pending] = useResetPasswordForm();
+}
+```
+
+### `useResendVerificationForm`
+
+```tsx
+import { useResendVerificationForm } from "@/hooks/use-resend-verification";
+
+function ResendPage() {
+  const [state, formAction, pending] = useResendVerificationForm();
+}
+```
+
+### `useTwoFactorSetupForm`
+
+```tsx
+import { useTwoFactorSetupForm } from "@/hooks/use-two-factor-setup-form";
+
+function TwoFactorSetupPage() {
+  const [state, formAction, pending] = useTwoFactorSetupForm();
+}
+```
+
+### `useVerifyTotpForm`
+
+```tsx
+import { useVerifyTotpForm } from "@/hooks/use-verify-totp-form";
+
+function TwoFactorVerifyPage() {
+  const [state, formAction, pending] = useVerifyTotpForm();
+}
+```
+
+## OAuth
+
+### `useSocialLogin`
+
+```tsx
+import { useSocialLogin } from "@/hooks/use-social-login";
+
+function SocialLogin() {
+  const { signIn } = useSocialLogin();
+  return <button onClick={() => signIn("github", "/dashboard")}>GitHub</button>;
+}
+```
+
+## Roles
+
+### `useRole`
+
+Mengembalikan string peran pengguna saat ini.
+
+```tsx
+import { useRole } from "@/hooks/use-role";
+
+function RoleBadge() {
+  const role = useRole();
+  return <span>Peran: {role ?? "tamu"}</span>;
+}
+```
+
+### `useHasRole`
+
+Memeriksa apakah pengguna saat ini memiliki peran tertentu.
+
+```tsx
+import { useHasRole } from "@/hooks/use-has-role";
+
+function AdminButton() {
+  const isAdmin = useHasRole("admin");
+  if (!isAdmin) return null;
+  return <button>Aksi admin</button>;
+}
+```
+
+| Param | Type | Deskripsi |
+|-------|------|-----------|
+| `role` | `string \| string[]` | Peran tunggal atau daftar peran yang diterima |
+
+Mengembalikan `boolean`.
+
+## Kode Cadangan
+
+### `useBackupCodes`
+
+```tsx
+import { useBackupCodes } from "@/hooks/use-backup-codes";
+
+function BackupCodesPage() {
+  const [state, formAction, pending] = useBackupCodes();
+}
+```
+
+## Terkait
+
+- [Server Actions](./server-actions) — Actions yang dibungkus oleh hooks ini
+- [Server Utilities](./server-utils) — Padanan sisi server
+- [Komponen Auth](../ui/auth-components) — Komponen UI yang menggunakan hooks ini

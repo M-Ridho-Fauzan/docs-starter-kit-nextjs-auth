@@ -1,0 +1,116 @@
+---
+title: Adapter Drizzle
+description: Adapter basis data Drizzle ORM untuk Next.js 16 Auth Starter Kit. Panduan pengaturan, konfigurasi, dukungan serverless, dan penggunaan klien kustom.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Adapter Drizzle
+
+Hubungkan Better Auth ke PostgreSQL melalui Drizzle ORM.
+
+## Dependensi
+
+Semua ini dideklarasikan sebagai `optionalDependencies` — hanya diinstal jika Anda menggunakan Drizzle:
+
+- `drizzle-orm` — Pustaka inti Drizzle ORM
+
+## Pengaturan
+
+### 1. Konfigurasi adapter
+
+Di `auth.config.ts`:
+
+```typescript
+export default defineAuthConfig({
+  database: {
+    adapter: "drizzle",
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### 2. Definisikan skema basis data
+
+Drizzle mengharuskan Anda mendefinisikan skema yang sesuai dengan model Better Auth:
+
+```typescript
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  email: text("email").unique().notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  role: text("role"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+```
+
+Lihat dokumentasi Better Auth untuk definisi skema lengkap.
+
+### 3. Push atau migrasi
+
+```bash
+# Push skema langsung
+pnpm db:push
+
+# Atau buat migrasi
+pnpm db:generate
+pnpm db:migrate
+```
+
+## URL Basis Data
+
+```bash
+DATABASE_URL=postgresql://user:password@host:5432/db
+```
+
+## Konfigurasi Serverless
+
+### Neon
+
+```bash
+DATABASE_URL=postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/db?sslmode=require
+```
+
+### Supabase
+
+```bash
+DATABASE_URL=postgresql://postgres:password@xxx.supabase.co:5432/postgres?pgbouncer=true
+```
+
+## Klien Kustom
+
+Berikan instance Drizzle yang sudah diinisialisasi:
+
+```typescript
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
+
+export default defineAuthConfig({
+  database: {
+    adapter: "drizzle",
+    client: db, // menggunakan ini daripada membuat dari url
+  },
+});
+```
+
+## Terkait
+
+- [Ikhtisar Basis Data](../overview) — Perbandingan adapter
+- [Referensi Skema](../schema-reference) — Referensi field model
+- [Panduan Migrasi Prisma](../../guides/prisma-migration) — Manajemen skema

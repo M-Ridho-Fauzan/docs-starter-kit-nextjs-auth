@@ -1,0 +1,111 @@
+---
+title: OAuth / Login Sosial
+description: Login sosial OAuth untuk Next.js 16 dengan Better Auth. Konfigurasi GitHub, Google, dan penyedia OAuth kustom. Server actions, hooks, dan komponen UI.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# OAuth / Login Sosial
+
+Autentikasi OAuth menggunakan Better Auth. Mendukung GitHub, Google, dan penyedia lain yang didukung Better Auth melalui array `custom`.
+
+## Konfigurasi
+
+### Mengaktifkan GitHub / Google
+
+```typescript
+import { defineAuthConfig } from "@/auth/config";
+
+export default defineAuthConfig({
+  features: {
+    oauth: {
+      github: {
+        enabled: true,
+        clientId: process.env.GITHUB_CLIENT_ID!,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      },
+      google: {
+        enabled: false,
+        clientId: "",
+        clientSecret: "",
+      },
+    },
+  },
+});
+```
+
+### Menambahkan penyedia kustom
+
+Untuk penyedia apa pun yang didukung Better Auth (misalnya Discord, Twitter, Apple), gunakan array `custom`:
+
+```typescript
+export default defineAuthConfig({
+  features: {
+    oauth: {
+      custom: [
+        {
+          id: "discord",
+          enabled: true,
+          clientId: process.env.DISCORD_CLIENT_ID!,
+          clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+        },
+      ],
+    },
+  },
+});
+```
+
+`id` harus sesuai dengan ID penyedia yang didukung oleh Better Auth.
+
+## UI
+
+Tombol login sosial ditampilkan oleh komponen `SocialLoginButtons`. Tombol-tombol ini muncul di halaman login dan registrasi ketika setidaknya satu penyedia OAuth diaktifkan.
+
+### `SocialLoginButtons`
+
+```tsx
+import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
+
+<SocialLoginButtons providers={["github", "google"]} redirectTo="/dashboard" />
+```
+
+| Prop | Tipe | Wajib | Deskripsi |
+|------|------|-------|-----------|
+| `providers` | `string[]` | ya | Daftar ID penyedia OAuth yang diaktifkan |
+| `redirectTo` | `string` | tidak | URL tujuan setelah login berhasil |
+
+## Hook
+
+### `useSocialLogin`
+
+```tsx
+import { useSocialLogin } from "@/hooks/use-social-login";
+
+function MyComponent() {
+  const { signIn } = useSocialLogin();
+
+  return (
+    <button onClick={() => signIn("github", "/dashboard")}>
+      Sign in with GitHub
+    </button>
+  );
+}
+```
+
+## Menambahkan penyedia bawaan baru
+
+Jika Better Auth menambahkan penyedia baru (misalnya `"twitter"`), tambahkan entri di array `custom` — tidak perlu perubahan kode pada starter kit.
+
+## Terkait
+
+- [Email & Password](./email-password) — Registrasi dan login
+- [Environment Variables](../get-started/environment-variables) — Kredensial OAuth
+- [Auth Components](../ui/auth-components) — Tombol login sosial

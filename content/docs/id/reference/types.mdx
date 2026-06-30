@@ -1,0 +1,206 @@
+---
+title: Referensi Tipe TypeScript
+description: Referensi tipe TypeScript lengkap untuk Next.js 16 Auth Starter Kit. AuthConfig, Session, AuthActionResult, dan semua tipe bagian konfigurasi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi Tipe TypeScript
+
+Semua tipe yang diekspor dari starter kit.
+
+## Tipe Konfigurasi
+
+Sumber: `src/auth/config/types.ts`
+
+### `AuthConfig`
+
+```typescript
+interface AuthConfig {
+  email: EmailConfig;
+  database: DatabaseConfig;
+  features: FeaturesConfig;
+  session: SessionConfig;
+  ui: UiConfig;
+}
+```
+
+### `AuthConfigInput`
+
+Tipe input yang diterima oleh `defineAuthConfig()`. Sama seperti `AuthConfig` tetapi dengan semua field opsional (default diterapkan).
+
+### `EmailConfig`
+
+```typescript
+interface EmailConfig {
+  sendVerificationEmail?: SendVerificationEmailCallback;
+  sendPasswordResetEmail?: SendPasswordResetEmailCallback;
+}
+
+type SendVerificationEmailCallback = (params: {
+  email: string;
+  url: string;
+  token: string;
+}) => Promise<void>;
+
+type SendPasswordResetEmailCallback = (params: {
+  email: string;
+  url: string;
+  token: string;
+}) => Promise<void>;
+```
+
+### `DatabaseConfig`
+
+```typescript
+interface DatabaseConfig {
+  adapter: "prisma" | "drizzle" | "kysely";
+  url: string;
+  client?: unknown;
+}
+```
+
+### `SessionConfig`
+
+```typescript
+interface SessionConfig {
+  expiresIn: string;
+  strategy: "jwt" | "database";
+  cookieName: string;
+  updateAge?: string;
+  cookieCache?: boolean;
+}
+```
+
+### `FeaturesConfig`
+
+```typescript
+interface FeaturesConfig {
+  emailPassword: EmailPasswordConfig;
+  passwordReset: PasswordResetConfig;
+  oauth: OAuthConfig;
+  twoFactor: TwoFactorConfig;
+  roles: RolesConfig;
+}
+```
+
+### `EmailPasswordConfig`
+
+```typescript
+interface EmailPasswordConfig {
+  enabled: boolean;
+  requireEmailVerification: boolean;
+  passwordMinLength: number;
+  passwordMaxLength: number;
+  disableSignUp: boolean;
+  autoSignIn: boolean;
+}
+```
+
+### `PasswordResetConfig`
+
+```typescript
+type PasswordResetConfig = boolean | {
+  expiresIn?: string;
+};
+```
+
+### `OAuthConfig`
+
+```typescript
+interface OAuthConfig {
+  github?: OAuthProviderConfig;
+  google?: OAuthProviderConfig;
+  custom?: CustomOAuthProviderConfig[];
+}
+
+interface OAuthProviderConfig {
+  enabled: boolean;
+  clientId: string;
+  clientSecret: string;
+}
+```
+
+### `TwoFactorConfig`
+
+```typescript
+interface TwoFactorConfig {
+  enabled: boolean;
+  methods: "totp"[];
+}
+```
+
+### `RolesConfig`
+
+```typescript
+interface RolesConfig {
+  enabled: boolean;
+  defaultRole: string;
+  roles: string[];
+}
+```
+
+### `UiConfig`
+
+```typescript
+interface UiConfig {
+  theme: "shadcn";
+  redirectAfterLogin: string;
+  redirectAfterLogout: string;
+  twoFactorSettingsPath: string;
+  protectedPaths: string[];
+  roleRestrictions: Record<string, string[]>;
+}
+```
+
+## Tipe Session
+
+Sumber: `src/auth/server.ts`
+
+```typescript
+type Session = typeof auth.$Infer.Session; // Diinferensikan dari Better Auth
+```
+
+## Tipe Hasil Aksi
+
+Sumber: `src/lib/auth/actions/types.ts`
+
+```typescript
+interface AuthSuccessResult<T = void> {
+  success: true;
+  message?: string;
+  data?: T;
+}
+
+interface AuthErrorResult {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
+type AuthActionResult<T = void> = AuthSuccessResult<T> | AuthErrorResult;
+```
+
+## Tipe Adapter
+
+Sumber: `src/auth/adapters/types.ts`
+
+```typescript
+type CreateAdapter = (config: DatabaseConfig) => unknown;
+```
+
+## Terkait
+
+- [Skema Konfigurasi](./config-schema) — Aturan validasi Zod
+- [Server Actions](../api/server-actions) — Tipe hasil aksi yang digunakan
+- [Server Utilities](../api/server-utils) — Tipe session yang digunakan

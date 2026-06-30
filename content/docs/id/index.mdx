@@ -1,0 +1,89 @@
+---
+sidebar_position: 0
+title: Indeks Dokumentasi
+description: Daftar isi lengkap untuk dokumentasi Next.js 16 Auth Starter Kit. Temukan panduan, referensi API, dan contoh untuk semua fitur autentikasi.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file *.en.mdx ke *.id.mdx dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description) ke Bahasa Indonesia
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Indeks Dokumentasi
+
+## [Memulai](./get-started/installation)
+
+Mulai di sini jika Anda baru mengenal proyek ini.
+
+- [Instalasi](./get-started/installation) — Prasyarat, clone, instalasi, pengaturan environment
+- [Mulai Cepat](./get-started/quick-start) — Panduan 5 menit dari nol hingga aplikasi berjalan
+- [Konfigurasi](./get-started/configuration) — Semua opsi `auth.config.ts` dijelaskan
+- [Variabel Lingkungan](./get-started/environment-variables) — Referensi `.env` lengkap
+- [Struktur Proyek](./get-started/project-structure) — Organisasi file dan folder
+
+## [Fitur Autentikasi](./auth-features/email-password)
+
+Fitur autentikasi dan otorisasi.
+
+- [Email & Password](./auth-features/email-password) — Registrasi dan login
+- [Verifikasi Email](./auth-features/email-verification) — Alur verifikasi
+- [Reset Password](./auth-features/password-reset) — Lupa dan reset password
+- [OAuth / Login Sosial](./auth-features/oauth) — GitHub, Google, penyedia kustom
+- [Autentikasi Dua Faktor](./auth-features/two-factor) — TOTP 2FA
+- [Sistem Peran & Izin](./auth-features/roles) — Kontrol akses berbasis peran
+
+## [Database](./database/overview)
+
+Adapter database dan skema.
+
+- [Ikhtisar Database](./database/overview) — Konsep adapter dan pemilihan
+- [Adapter Prisma](./database/adapters/prisma) — Pengaturan dan konfigurasi
+- [Adapter Drizzle](./database/adapters/drizzle) — Pengaturan dan konfigurasi
+- [Adapter Kysely](./database/adapters/kysely) — Pengaturan dan konfigurasi
+- [Referensi Skema](./database/schema-reference) — Definisi model database
+
+## [Referensi API](./api/server-actions)
+
+Referensi API server dan klien.
+
+- [Server Actions](./api/server-actions) — Semua 11 server action dengan tipe
+- [React Hooks](./api/hooks) — Semua 13 client hook
+- [Utilitas Server](./api/server-utils) — `getServerSession`, `hasRole`, `getUserRole`
+- [Middleware](./api/middleware) — Perlindungan rute dan pengecekan peran
+
+## [Komponen UI](./ui/auth-components)
+
+Komponen antarmuka pengguna.
+
+- [Komponen Auth](./ui/auth-components) — Formulir login, register, dan password
+- [Komponen Pengguna](./ui/user-components) — Profil, pengaturan 2FA, kode cadangan
+- [Tema](./ui/theming) — Mode gelap, CSS variables, Tailwind
+
+## [Panduan](./guides/deployment)
+
+Panduan praktis how-to.
+
+- [Deployment](./guides/deployment) — Deployment produksi di Vercel
+- [Testing](./guides/testing) — Menulis dan menjalankan tes
+- [Migrasi Prisma](./guides/prisma-migration) — Manajemen skema database
+- [Kustomisasi Lanjutan](./guides/advanced-customization) — Adapter dan plugin kustom
+
+## [Referensi](./reference/config-schema)
+
+Dokumentasi referensi lengkap.
+
+- [Skema Konfigurasi](./reference/config-schema) — Setiap opsi konfigurasi, tipe, dan default
+- [Tipe TypeScript](./reference/types) — Ekspor tipe dan definisinya
+- [CLI Tools](./reference/cli-tools) — Setup wizard dan generator lingkungan
+
+## [Contoh](./examples/protected-layout)
+
+Contoh kode lengkap.
+
+- [Layout Terproteksi](./examples/protected-layout) — Perlindungan rute dengan auth dan peran
+- [Adapter Kustom](./examples/custom-adapter) — Mengimplementasikan adapter database kustom

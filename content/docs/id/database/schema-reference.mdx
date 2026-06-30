@@ -1,0 +1,135 @@
+---
+title: Referensi Skema Basis Data
+description: Model skema basis data untuk Next.js 16 Auth Starter Kit. Referensi untuk tabel user, session, account, dan verification yang digunakan oleh Better Auth.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Referensi Skema Basis Data
+
+Better Auth membutuhkan empat model basis data. Skema Prisma ditunjukkan di bawah — adapter lain menggunakan struktur tabel yang setara.
+
+## User
+
+```prisma
+model user {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      session[]
+  accounts      account[]
+}
+```
+
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| `id` | `String` | Kunci utama, CUID yang dihasilkan otomatis |
+| `name` | `String?` | Nama tampilan pengguna |
+| `email` | `String` | Alamat email (unik) |
+| `emailVerified` | `Boolean` | Apakah email sudah terverifikasi |
+| `image` | `String?` | URL avatar |
+| `role` | `String?` | Peran pengguna untuk RBAC (null saat roles dinonaktifkan) |
+| `createdAt` | `DateTime` | Stempel waktu pembuatan akun |
+| `updatedAt` | `DateTime` | Stempel waktu pembaruan terakhir |
+
+## Session
+
+```prisma
+model session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+```
+
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| `id` | `String` | Kunci utama |
+| `expiresAt` | `DateTime` | Stempel waktu kedaluwarsa sesi |
+| `token` | `String` | Token sesi unik |
+| `ipAddress` | `String?` | Alamat IP saat login |
+| `userAgent` | `String?` | User agent saat login |
+| `userId` | `String` | Kunci asing ke user |
+
+## Account
+
+```prisma
+model account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([accountId, providerId])
+  @@index([userId])
+}
+```
+
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| `accountId` | `String` | ID akun khusus penyedia |
+| `providerId` | `String` | Nama penyedia (misalnya, "github", "google") |
+| `userId` | `String` | Kunci asing ke user |
+| `password` | `String?` | Kata sandi yang di-hash (untuk auth email/password) |
+| `accessToken` | `String?` | Token akses OAuth |
+| `refreshToken` | `String?` | Token refresh OAuth |
+
+## Verification
+
+```prisma
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+}
+```
+
+| Field | Tipe | Deskripsi |
+|-------|------|-----------|
+| `identifier` | `String` | Pengidentifikasi untuk verifikasi (email, dll.) |
+| `value` | `String` | Token atau kode verifikasi |
+| `expiresAt` | `DateTime` | Stempel waktu kedaluwarsa |
+
+## Terkait
+
+- [Ikhtisar Basis Data](./overview) — Sistem adapter
+- [Adapter Prisma](./adapters/prisma) — Pengaturan Prisma
+- [Adapter Drizzle](./adapters/drizzle) — Pengaturan Drizzle
+- [Adapter Kysely](./adapters/kysely) — Pengaturan Kysely

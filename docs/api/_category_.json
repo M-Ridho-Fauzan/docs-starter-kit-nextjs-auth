@@ -1,0 +1,6 @@
+{
+  "label": "API Reference",
+  "position": 4,
+  "collapsed": false,
+  "link": { "type": "generated-index", "description": "Server actions, hooks, utilities, and middleware." }
+}

@@ -1,0 +1,4 @@
+{
+  "title": "Guides",
+  "pages": ["deployment", "testing", "prisma-migration", "advanced-customization"]
+}

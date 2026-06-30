@@ -1,0 +1,142 @@
+---
+title: Panduan Testing
+description: Pengaturan testing untuk Next.js 16 Auth Starter Kit. Menjalankan tes, menulis tes baru, konfigurasi vitest, dan pola testing untuk fitur auth.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Panduan Testing
+
+Cara menjalankan dan menulis tes untuk starter kit.
+
+## Menjalankan Tes
+
+```bash
+# Jalankan semua tes
+pnpm test
+
+# Mode watch
+pnpm test:watch
+
+# Jalankan file tes spesifik
+pnpm test -- src/auth/mapper.test.ts
+```
+
+## Struktur Tes
+
+Tes ditempatkan bersama file sumbernya:
+
+```
+src/auth/
+├── mapper.test.ts            # Tes pemetaan konfigurasi
+├── config/
+│   ├── index.test.ts         # Validasi defineAuthConfig
+│   └── oauth.test.ts         # Helper penyedia OAuth
+├── adapters/
+│   └── index.test.ts         # Tes registri adaptor
+
+src/lib/auth/
+├── server-utils.test.ts      # getServerSession, hasRole, getUserRole
+└── actions/
+    ├── email-password.test.ts        # Aksi login/register
+    ├── email-verification.test.ts    # Aksi verifikasi email
+    ├── password-reset.test.ts        # Aksi reset password
+    └── two-factor.test.ts            # Aksi TOTP
+
+src/hooks/
+├── use-auth.test.ts
+├── use-session.test.ts
+├── use-role.test.ts
+└── use-has-role.test.ts
+
+src/components/
+├── auth/auth-layout.test.tsx
+├── auth/social-login-buttons.test.tsx
+└── user/user-profile.test.tsx
+
+src/proxy.test.ts             # Tes middleware
+
+scripts/
+├── setup.test.ts             # Tes wizard pengaturan
+├── lib/
+├── write-config.test.ts      # Tes pembuatan konfigurasi
+└── generate-env.test.ts      # Tes pembuatan env
+```
+
+## Pola Mocking
+
+Server actions di-mock dengan `@/auth/server` dan menyediakan fungsi API mock:
+
+```typescript
+vi.mock("@/auth/server", () => ({
+  auth: {
+    api: {
+      signInEmail: vi.fn(),
+      signUpEmail: vi.fn(),
+    },
+  },
+}));
+```
+
+Auth config di-mock hanya dengan field yang dibaca oleh modul yang diuji:
+
+```typescript
+vi.mock("../../auth.config", () => ({
+  default: {
+    ui: {
+      redirectAfterLogin: "/dashboard",
+      redirectAfterLogout: "/login",
+    },
+  },
+}));
+```
+
+## Menulis Tes
+
+### Menguji server action
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("@/auth/server", () => ({
+  auth: { api: { myAction: vi.fn() } },
+}));
+
+const { myServerAction } = await import("./my-action");
+
+it("mengembalikan error validasi saat email tidak diisi", async () => {
+  const form = new FormData();
+  const result = await myServerAction(null, form);
+  expect(result.success).toBe(false);
+});
+```
+
+### Menguji komponen
+
+```typescript
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { MyComponent } from "./my-component";
+
+it("menampilkan tombol submit", () => {
+  render(<MyComponent />);
+  expect(screen.getByRole("button")).toHaveTextContent("Submit");
+});
+```
+
+## Konfigurasi Tes
+
+Tes menggunakan Vitest dengan jsdom untuk tes komponen. Lihat `vitest.config.ts` untuk konfigurasi lengkap.
+
+## Terkait
+
+- [Panduan Deployment](./deployment) — Pengaturan produksi
+- [Instalasi](../get-started/installation) — Pengaturan lokal

@@ -1,0 +1,87 @@
+---
+title: CLI Tools Reference
+description: CLI tools for the Next.js 16 Auth Starter Kit. Setup wizard for interactive project configuration and environment variable generator.
+---
+
+# CLI Tools Reference
+
+The starter kit includes two CLI tools for developer experience.
+
+## Setup Wizard
+
+Interactive CLI to configure your project from scratch.
+
+```bash
+pnpm setup
+```
+
+The wizard asks questions about your project:
+
+1. **Database adapter** — Prisma, Drizzle, or Kysely
+2. **Email/password authentication** — Enable or disable
+3. **Email verification** — Require verification or not
+4. **OAuth providers** — GitHub, Google, or custom
+5. **Two-factor authentication** — Enable or disable
+6. **Role system** — Enable or disable
+
+After answering, it generates a complete `auth.config.ts` file with your chosen configuration.
+
+### How it works
+
+The wizard uses `@clack/prompts` for interactive prompts and generates the config file via `generateAuthConfigFile()` from `scripts/lib/write-config.ts`.
+
+```typescript
+// Generated structure
+{
+  database: { adapter: "prisma", url: process.env.DATABASE_URL! },
+  features: {
+    emailPassword: { enabled: true },
+    oauth: { github: { enabled: false } },
+    twoFactor: { enabled: false },
+    roles: { enabled: false },
+  },
+  // ...
+}
+```
+
+## Environment Variable Generator
+
+Generates a complete `.env.example` file from your `auth.config.ts`.
+
+```bash
+pnpm generate-env
+```
+
+The generator:
+
+1. Reads your resolved auth config
+2. Detects which features are enabled
+3. Collects required env vars based on enabled features
+4. Generates `.env.example` with only the variables you need
+
+### Example output
+
+```bash
+# Required
+DATABASE_URL=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+
+# OAuth Providers
+# GitHub
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Email (Resend)
+RESEND_API_KEY=
+```
+
+### How it works
+
+The generator uses `collectEnvVars()` from `scripts/lib/generate-env.ts` to traverse the config and identify required environment variables.
+
+## Related
+
+- [Installation](../get-started/installation) — Setup guide
+- [Configuration](../get-started/configuration) — Config reference
+- [Environment Variables](../get-started/environment-variables) — Env reference

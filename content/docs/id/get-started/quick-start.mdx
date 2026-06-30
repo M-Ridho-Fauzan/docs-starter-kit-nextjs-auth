@@ -1,0 +1,81 @@
+---
+title: Mulai Cepat
+description: Panduan mulai cepat 5 menit untuk Next.js 16 Auth Starter Kit. Dari nol hingga aplikasi berjalan dengan autentikasi email/password, OAuth, dan akses berbasis peran.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file *.en.mdx ke *.id.mdx dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description) ke Bahasa Indonesia
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+# Mulai Cepat
+
+Dari nol hingga aplikasi berjalan dalam 5 menit.
+
+## 1. Buat dan Install
+
+```bash
+git clone https://github.com/your-org/starterkit-auth-nextjs.git my-app
+cd my-app
+pnpm install
+```
+
+## 2. Atur Variabel Lingkungan
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` — atur `DATABASE_URL` dan `BETTER_AUTH_SECRET`.
+
+## 3. Sinkronisasi Database
+
+```bash
+npx prisma db push
+```
+
+## 4. Jalankan
+
+```bash
+pnpm dev
+```
+
+Aplikasi Anda berjalan di [http://localhost:3000](http://localhost:3000).
+
+## Fitur Default (siap pakai)
+
+- **Email/password** authentication — daftar di `/register`, masuk di `/login`
+- **Reset password** — gunakan `/forgot-password`
+- **Dashboard** — rute terproteksi di `/dashboard`
+- **JWT sessions** — stateless, tanpa pembacaan database setiap request
+- **Prisma adapter** — database PostgreSQL
+- **shadcn/ui** — komponen Tailwind CSS v4
+- **Mode gelap** — CSS variables siap dengan dukungan class `.dark`
+
+## Dinonaktifkan secara Default (aktifkan di `auth.config.ts`)
+
+| Fitur | Cara mengaktifkan |
+|-------|-------------------|
+| Verifikasi email | Atur `requireEmailVerification: true` |
+| Login GitHub/Google | Atur OAuth provider `enabled: true` + kredensial |
+| Autentikasi dua faktor | Atur `twoFactor.enabled: true` |
+| Peran/izin | Atur `roles.enabled: true` |
+| Database sessions | Atur `session.strategy: "database"` |
+
+## Langkah Selanjutnya
+
+- [Konfigurasi proyek Anda](./configuration) — Kustomisasi `auth.config.ts`
+- [Tambahkan OAuth providers](../auth-features/oauth) — GitHub, Google, dan lainnya
+- [Aktifkan autentikasi dua faktor](../auth-features/two-factor) — TOTP 2FA
+- [Deploy ke produksi](../guides/deployment) — Deployment Vercel
+
+## Terkait
+
+- [Instalasi](./installation) — Instalasi detail
+- [Konfigurasi](./configuration) — Referensi konfigurasi lengkap
+- [Struktur Proyek](./project-structure) — Organisasi file

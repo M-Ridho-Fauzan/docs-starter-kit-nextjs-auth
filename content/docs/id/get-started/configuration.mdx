@@ -1,0 +1,183 @@
+---
+title: Konfigurasi
+description: Panduan lengkap auth.config.ts di Next.js 16 Auth Starter Kit. Semua bagian konfigurasi dijelaskan dengan tipe, nilai bawaan, dan contoh untuk Better Auth.
+---
+
+{/*
+  Halaman ini dalam Bahasa Indonesia.
+  Untuk menerjemahkan halaman lain:
+  1. Copy file dari content/docs/en/ ke content/docs/id/ dengan nama yang sama
+  2. Terjemahkan frontmatter (title, description)
+  3. Terjemahkan heading dan teks prose
+  4. JANGAN terjemahkan: code blocks, URL, nama fitur/API, nama variabel, command CLI
+  5. Pastikan semua link internal tetap berfungsi (tetap gunakan path yang sama)
+*/}
+
+import { ConfigBuilder } from "@/components/config-builder";
+
+# Konfigurasi
+
+Starter kit ini menggunakan satu titik masuk untuk semua konfigurasi autentikasi: `auth.config.ts`.
+
+## Pembuat Interaktif
+
+<ConfigBuilder />
+
+## Struktur Dasar
+
+```typescript
+import { defineAuthConfig } from "@/auth/config";
+
+export default defineAuthConfig({
+  database: {
+    adapter: "prisma", // "prisma" | "drizzle" | "kysely"
+    url: process.env.DATABASE_URL!,
+  },
+  features: {
+    emailPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+      passwordMinLength: 8,
+    },
+    passwordReset: true,
+    oauth: {
+      github: {
+        enabled: false,
+        clientId: process.env.GITHUB_CLIENT_ID ?? "",
+        clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+      },
+    },
+    twoFactor: {
+      enabled: false,
+    },
+    roles: {
+      enabled: false,
+    },
+  },
+  session: {
+    expiresIn: "7d",
+    strategy: "jwt",
+    cookieName: "auth_session",
+  },
+  ui: {
+    theme: "shadcn",
+    redirectAfterLogin: "/dashboard",
+    redirectAfterLogout: "/",
+  },
+});
+```
+
+## Bagian: `database`
+
+```typescript
+interface DatabaseConfig {
+  adapter: "prisma" | "drizzle" | "kysely";
+  url: string;
+  client?: unknown;
+}
+```
+
+| Kolom | Tipe | Wajib | Deskripsi |
+|-------|------|-------|-----------|
+| `adapter` | `enum` | ya | Adapter database yang digunakan |
+| `url` | `string` | ya | String koneksi database |
+| `client` | `unknown` | tidak | Instance klien yang sudah diinisialisasi (melewati pembuatan klien berbasis URL) |
+
+## Bagian: `features`
+
+### `emailPassword`
+
+```typescript
+interface EmailPasswordConfig {
+  enabled: boolean;         // default: false
+  requireEmailVerification: boolean;  // default: false
+  passwordMinLength: number;  // default: 8
+  passwordMaxLength: number;  // default: 128
+  disableSignUp: boolean;   // default: false
+  autoSignIn: boolean;       // default: true
+}
+```
+
+### `passwordReset`
+
+```typescript
+type PasswordResetConfig = boolean | {
+  expiresIn?: string;  // duration format: "30m", "1h", "2h", "1d"
+};
+```
+
+### `oauth`
+
+```typescript
+interface OAuthConfig {
+  github?: { enabled: boolean; clientId: string; clientSecret: string };
+  google?: { enabled: boolean; clientId: string; clientSecret: string };
+  custom?: Array<{
+    id: string;
+    enabled: boolean;
+    clientId: string;
+    clientSecret: string;
+  }>;
+}
+```
+
+### `twoFactor`
+
+```typescript
+interface TwoFactorConfig {
+  enabled: boolean;          // default: false
+  methods: "totp"[];         // default: ["totp"]
+}
+```
+
+### `roles`
+
+```typescript
+interface RolesConfig {
+  enabled: boolean;          // default: false
+  defaultRole: string;       // default: "user"
+  roles: string[];           // default: ["user", "admin"]
+}
+```
+
+## Bagian: `session`
+
+```typescript
+interface SessionConfig {
+  expiresIn: string;         // default: "7d"
+  strategy: "jwt" | "database";  // default: "jwt"
+  cookieName: string;        // default: "auth_session"
+  updateAge?: string;        // optional, duration format
+  cookieCache?: boolean;     // default: false
+}
+```
+
+## Bagian: `ui`
+
+```typescript
+interface UiConfig {
+  theme: "shadcn";           // default: "shadcn"
+  redirectAfterLogin: string; // default: "/dashboard"
+  redirectAfterLogout: string; // default: "/"
+  twoFactorSettingsPath: string;  // default: "/settings/2fa"
+  protectedPaths: string[];   // default: ["/dashboard", "/settings"]
+  roleRestrictions: Record<string, string[]>;  // default: {"/admin": ["admin"]}
+}
+```
+
+## Format Durasi
+
+Opsi konfigurasi yang menerima durasi menggunakan format ini:
+
+| Format | Contoh | Nilai |
+|--------|--------|-------|
+| `Number + "s"` | `"30s"` | 30 detik |
+| `Number + "m"` | `"30m"` | 30 menit |
+| `Number + "h"` | `"1h"` | 1 jam |
+| `Number + "d"` | `"7d"` | 7 hari |
+
+## Terkait
+
+- [Instalasi](./installation) — Panduan setup
+- [Variabel Lingkungan](./environment-variables) — Referensi `.env`
+- [Skema Konfigurasi](../reference/config-schema) — Definisi skema lengkap

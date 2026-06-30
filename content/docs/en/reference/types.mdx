@@ -1,0 +1,196 @@
+---
+title: TypeScript Types Reference
+description: Complete TypeScript types reference for the Next.js 16 Auth Starter Kit. AuthConfig, Session, AuthActionResult, and all config section types.
+---
+
+# TypeScript Types Reference
+
+All exported types from the starter kit.
+
+## Config Types
+
+Source: `src/auth/config/types.ts`
+
+### `AuthConfig`
+
+```typescript
+interface AuthConfig {
+  email: EmailConfig;
+  database: DatabaseConfig;
+  features: FeaturesConfig;
+  session: SessionConfig;
+  ui: UiConfig;
+}
+```
+
+### `AuthConfigInput`
+
+The input type accepted by `defineAuthConfig()`. Same as `AuthConfig` but with all fields optional (defaults are applied).
+
+### `EmailConfig`
+
+```typescript
+interface EmailConfig {
+  sendVerificationEmail?: SendVerificationEmailCallback;
+  sendPasswordResetEmail?: SendPasswordResetEmailCallback;
+}
+
+type SendVerificationEmailCallback = (params: {
+  email: string;
+  url: string;
+  token: string;
+}) => Promise<void>;
+
+type SendPasswordResetEmailCallback = (params: {
+  email: string;
+  url: string;
+  token: string;
+}) => Promise<void>;
+```
+
+### `DatabaseConfig`
+
+```typescript
+interface DatabaseConfig {
+  adapter: "prisma" | "drizzle" | "kysely";
+  url: string;
+  client?: unknown;
+}
+```
+
+### `SessionConfig`
+
+```typescript
+interface SessionConfig {
+  expiresIn: string;
+  strategy: "jwt" | "database";
+  cookieName: string;
+  updateAge?: string;
+  cookieCache?: boolean;
+}
+```
+
+### `FeaturesConfig`
+
+```typescript
+interface FeaturesConfig {
+  emailPassword: EmailPasswordConfig;
+  passwordReset: PasswordResetConfig;
+  oauth: OAuthConfig;
+  twoFactor: TwoFactorConfig;
+  roles: RolesConfig;
+}
+```
+
+### `EmailPasswordConfig`
+
+```typescript
+interface EmailPasswordConfig {
+  enabled: boolean;
+  requireEmailVerification: boolean;
+  passwordMinLength: number;
+  passwordMaxLength: number;
+  disableSignUp: boolean;
+  autoSignIn: boolean;
+}
+```
+
+### `PasswordResetConfig`
+
+```typescript
+type PasswordResetConfig = boolean | {
+  expiresIn?: string;
+};
+```
+
+### `OAuthConfig`
+
+```typescript
+interface OAuthConfig {
+  github?: OAuthProviderConfig;
+  google?: OAuthProviderConfig;
+  custom?: CustomOAuthProviderConfig[];
+}
+
+interface OAuthProviderConfig {
+  enabled: boolean;
+  clientId: string;
+  clientSecret: string;
+}
+```
+
+### `TwoFactorConfig`
+
+```typescript
+interface TwoFactorConfig {
+  enabled: boolean;
+  methods: "totp"[];
+}
+```
+
+### `RolesConfig`
+
+```typescript
+interface RolesConfig {
+  enabled: boolean;
+  defaultRole: string;
+  roles: string[];
+}
+```
+
+### `UiConfig`
+
+```typescript
+interface UiConfig {
+  theme: "shadcn";
+  redirectAfterLogin: string;
+  redirectAfterLogout: string;
+  twoFactorSettingsPath: string;
+  protectedPaths: string[];
+  roleRestrictions: Record<string, string[]>;
+}
+```
+
+## Session Types
+
+Source: `src/auth/server.ts`
+
+```typescript
+type Session = typeof auth.$Infer.Session; // Inferred from Better Auth
+```
+
+## Action Result Types
+
+Source: `src/lib/auth/actions/types.ts`
+
+```typescript
+interface AuthSuccessResult<T = void> {
+  success: true;
+  message?: string;
+  data?: T;
+}
+
+interface AuthErrorResult {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
+type AuthActionResult<T = void> = AuthSuccessResult<T> | AuthErrorResult;
+```
+
+## Adapter Types
+
+Source: `src/auth/adapters/types.ts`
+
+```typescript
+type CreateAdapter = (config: DatabaseConfig) => unknown;
+```
+
+## Related
+
+- [Config Schema](./config-schema) — Zod validation rules
+- [Server Actions](../api/server-actions) — Action result types in use
+- [Server Utilities](../api/server-utils) — Session types in use
