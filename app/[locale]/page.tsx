@@ -146,7 +146,7 @@ export default function Home() {
               Read the Docs
             </Link>
             <Link
-              href="https://docs-nextauth-betterauth-five.vercel.app"
+              href="https://github.com/M-Ridho-Fauzan/docs-starter-kit-nextjs-auth"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border bg-background px-6 text-sm font-medium transition-all hover:bg-muted hover:-translate-y-0.5"

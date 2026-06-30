@@ -104,7 +104,7 @@ export function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
         </DropdownMenu>
 
         <a
-          href="https://docs-nextauth-betterauth-five.vercel.app"
+          href="https://github.com/M-Ridho-Fauzan/docs-starter-kit-nextjs-auth"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"

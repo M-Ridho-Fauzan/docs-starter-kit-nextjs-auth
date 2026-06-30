@@ -25,8 +25,8 @@ export const t = i18n
   .add({
     en: {
       "nav.search": "Search docs...",
-      "nav.searchShortcut": "⌘K",
-      "footer.copyright": "Built with Better Auth. All rights reserved.",
+      "nav.searchShortcut": "⌘ K",
+      "footer.copyright": "@ 2026 Built with Better Auth. All rights reserved.",
       "toc.title": "On This Page",
       "search.placeholder": "Search docs...",
       "search.noResults": "No results found.",
@@ -34,11 +34,12 @@ export const t = i18n
       "prevNext.next": "Next",
     },
     id: {
-      "nav.search": "Cari dokumentasi...",
-      "nav.searchShortcut": "⌘K",
-      "footer.copyright": "Dibangun dengan Better Auth. Hak cipta dilindungi.",
+      "nav.search": "Cari docs...",
+      "nav.searchShortcut": "⌘ K",
+      "footer.copyright":
+        "@ 2026 Dibangun dengan Better Auth. Hak cipta dilindungi.",
       "toc.title": "Di Halaman Ini",
-      "search.placeholder": "Cari dokumentasi...",
+      "search.placeholder": "Cari docs...",
       "search.noResults": "Tidak ada hasil ditemukan.",
       "prevNext.previous": "Sebelumnya",
       "prevNext.next": "Selanjutnya",

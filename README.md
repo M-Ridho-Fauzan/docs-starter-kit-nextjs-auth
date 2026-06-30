@@ -5,7 +5,7 @@ description: Docs for the Next.js 16 auth starter kit. Guides, API reference, an
 
 # NextJS Auth Starter Kit Documentation
 
-Documentation for [starterkit-auth-nextjs](https://docs-nextauth-betterauth-five.vercel.app) — a production-grade Next.js 16 authentication starter kit built on [Better Auth](https://www.better-auth.com/). Includes email/password authentication, OAuth social login, two-factor authentication (TOTP), role-based access control, session management, and shadcn/ui components.
+Documentation for [starterkit-auth-nextjs](https://github.com/M-Ridho-Fauzan/docs-starter-kit-nextjs-auth) — a production-grade Next.js 16 authentication starter kit built on [Better Auth](https://www.better-auth.com/). Includes email/password authentication, OAuth social login, two-factor authentication (TOTP), role-based access control, session management, and shadcn/ui components.
 
 ## Quick Links
 

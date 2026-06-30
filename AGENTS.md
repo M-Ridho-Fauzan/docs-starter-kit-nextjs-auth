@@ -1,6 +1,6 @@
 # AGENTS.md — NextJS Auth Starter Kit Documentation Project
 
-> **Project**: Standalone documentation site for [starterkit-auth-nextjs](https://docs-nextauth-betterauth-five.vercel.app) — a Next.js 16 auth starter kit built on Better Auth.
+> **Project**: Standalone documentation site for [starterkit-auth-nextjs](https://github.com/M-Ridho-Fauzan/docs-starter-kit-nextjs-auth) — a Next.js 16 auth starter kit built on Better Auth.
 >
 > **Source project**: `../..` (the parent directory is the starter kit itself)
 >

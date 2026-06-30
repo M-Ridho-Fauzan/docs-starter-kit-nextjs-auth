@@ -15,7 +15,7 @@ export function Footer() {
           {strings["footer.copyright"]}
         </p>
         <a
-          href="https://docs-nextauth-betterauth-five.vercel.app"
+          href="https://github.com/M-Ridho-Fauzan/docs-starter-kit-nextjs-auth"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-muted-foreground hover:text-foreground"
